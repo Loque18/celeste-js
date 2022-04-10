@@ -1,0 +1,31 @@
+{
+  "name": "celeste-js",
+  "scripts": {
+    "test": "lerna run test",
+    "diff": "lerna run diff",
+    "build": "lerna run build",
+    "prepare": "husky install",
+    "version": "lerna version"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lerna": "^4.0.0",
+    "prettier": "^2.6.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}
