@@ -1,7 +1,7 @@
-'use strict';
+import initCeleste from '@/lib/index';
 
-const core = require('..');
+// import { store as celesteStore } from '@celeste-js/store';
 
-describe('core', () => {
-    it('needs tests');
+describe('initCeleste', () => {
+    initCeleste({});
 });

@@ -1,15 +1,7 @@
-"use strict";
+import { store as celesteStore } from '@celeste-js/store';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _store = require("@celeste-js/store");
-
-var celesteJS = function celesteJS() {
-  return "Hello CelesteJS";
+const celesteJS = () => {
+  return 'Hello CelesteJS';
 };
 
-var _default = celesteJS;
-exports["default"] = _default;
+export default celesteJS;
