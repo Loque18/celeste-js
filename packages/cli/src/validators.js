@@ -1,20 +1,22 @@
+/* eslint no-console: 0 */
+
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
 
-const validators = {
+export const validators = {
     // validate_chain: chain => {
     //     if (!CHAINS[chain.toLowerCase()] && chain.toLowerCase() !== 'custom')
     //         throw new Error(`Chain "${chain}" is not supported`);
     // },
     validatePath: directory => {
-        const absolutePath = path.resolve(__dirname, directory);
-        if (!fs.existsSync(absolutePath))
-            throw new Error(`Directory "${absolutePath}" does not exist`);
+        const relativePath = path.resolve(directory);
+        if (!fs.existsSync(relativePath))
+            throw new Error(`Directory "${relativePath}" does not exist`);
     },
 };
 
-function check(validatorFN) {
+export function check(validatorFN) {
     try {
         validatorFN();
     } catch (e) {

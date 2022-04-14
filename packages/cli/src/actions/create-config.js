@@ -23,10 +23,12 @@ const createConfig = async options => {
     {
         const questions = abiQuestions();
         abiAnswers = await inquirer.prompt(questions);
-        check(() => validators.validatePath(abiAnswers.abiDirectory));
+
+        if (abiAnswers.abiPath.length > 0)
+            check(() => validators.validatePath(abiAnswers.abiPath));
     }
 
-    ops.abiPath = abiAnswers.abisPath;
+    ops.abiPath = abiAnswers.abiPath;
 
     // 1. check if targetBlockchain is valid
     // check(() => v.validate_chain(targetBlockchain));

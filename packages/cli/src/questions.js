@@ -1,4 +1,3 @@
-import { asd } from './cli';
 import constants from './contants';
 
 const { CHAINS } = constants;
@@ -76,14 +75,15 @@ export const chainQuestions = OpChain => {
     return questions;
 };
 
-export const abiQuestions = opAbi => {
+export const abiQuestions = () => {
     const questions = [];
 
     questions.push({
         type: 'input',
-        name: 'abisPath',
+        name: 'abiPath',
         message: "Enter folder directory to search for ABIs. (e.g. './abis')",
         default: '',
+        // filter: directory => path.resolve(directory),
     });
 
     return questions;
