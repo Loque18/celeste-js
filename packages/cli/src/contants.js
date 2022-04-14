@@ -33,7 +33,6 @@ const CHAINS = {
     ethereum: { ...eth },
 
     bsc,
-    bsct,
     'bsc-testnet': { ...bsct },
 
     pol,
@@ -46,5 +45,7 @@ const CHAINS = {
 const constants = {
     CHAINS,
 };
+
+Object.seal(constants);
 
 export default constants;

@@ -1,43 +1,37 @@
 import inquirer from 'inquirer';
-import chalk from 'chalk';
 
-import constants from '../contants';
+import { chainQuestions, abiQuestions } from '../questions';
 
-// import generateQuestions from '../questions';
+import { check, validators } from '../validators';
 
-const { CHAINS } = constants;
+const createConfig = async options => {
+    // 1. check if chain was provided, if not ask details for it
 
-const v = {
-    // validate_chain: chain => {
-    //     if (!CHAINS[chain.toLowerCase()] && chain.toLowerCase() !== 'custom')
-    //         throw new Error(`Chain "${chain}" is not supported`);
-    // },
-    // directoryExists: directory => {
-    //     const absolutePath = path.resolve(__dirname, directory);
-    //     if (!fs.existsSync(absolutePath))
-    //         throw new Error(`Directory "${absolutePath}" does not exist`);
-    // },
-};
+    const ops = {};
 
-function check(validator) {
-    try {
-        validator();
-    } catch (e) {
-        console.log('%s', chalk.red.bold(e.message));
-        console.log('');
-        console.log(e.stack);
-        process.exit(1);
+    // 1. chain
+    let chainAnswers;
+    if (options.chain === 'custom' || !options.chain) {
+        const questions = chainQuestions(options.chain);
+        chainAnswers = await inquirer.prompt(questions);
     }
-}
 
-const createConfig = options => {
+    ops.chain = options.chain || chainAnswers.chain;
+
+    // 2. abi directory
+    let abiAnswers;
+    {
+        const questions = abiQuestions();
+        abiAnswers = await inquirer.prompt(questions);
+        check(() => validators.validatePath(abiAnswers.abiDirectory));
+    }
+
+    ops.abiPath = abiAnswers.abisPath;
+
     // 1. check if targetBlockchain is valid
-    if (options.chain) check(() => v.validate_chain(options.chain));
-
     // check(() => v.validate_chain(targetBlockchain));
     // console.log(targetBlockchain);
     // const questions = generateQuestions();
-    // const answers = inquirer.prompt(questions);
 };
 
 export default createConfig;

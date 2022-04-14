@@ -1,40 +1,56 @@
-const generateQuestions = options => {
+import { asd } from './cli';
+import constants from './contants';
 
+const { CHAINS } = constants;
+
+export const chainQuestions = OpChain => {
     const questions = [];
-    
-    questions.push({
-        type: 'list',
-        name: 'chain',
-        message: 'In which blockchain will operate the app ?',
-        choices: ['Ethereum', 'Harmony', 'Custom'],
-    });
+
+    // remove repeated chains from CHAINS
+    const permittedChains = [
+        'ethereum',
+        'bsc',
+        'bsc-testnet',
+        'polygon',
+        'harmony',
+    ];
+    const chains = Object.keys(CHAINS).filter(chain =>
+        permittedChains.includes(chain)
+    );
+
+    if (!OpChain) {
+        questions.push({
+            type: 'list',
+            name: 'chain',
+            message: 'Please select the target blockchain',
+            choices: [...chains, 'custom'],
+        });
 
         // if chain is custom, prompt for chain name and id
-
         questions.push({
             type: 'input',
             name: 'chainName',
-            message: "What is the chain's name?",
+            message: 'Please enter the name of the chain',
             default: null,
-            when: answers => answers.chain === 'Custom',
+            when: answers => answers.chain === 'custom',
         });
 
         questions.push({
             type: 'input',
             name: 'chainId',
-            message: "What is the chain's id chain?",
+            message: 'Please enter the id of the chain',
             default: null,
-            when: answers => answers.chain === 'Custom',
+            when: answers => answers.chain === 'custom',
         });
 
         questions.push({
             type: 'input',
             name: 'chainUrl',
-            message: "What is the chain's rpc-url ?",
+            message: 'Please enter the rpc url of the chain',
             default: null,
-            when: answers => answers.chain === 'Custom',
+            when: answers => answers.chain === 'custom',
         });
-    } else if (options.chain === 'Custom') {
+    } else if (OpChain === 'custom') {
         questions.push({
             type: 'input',
             name: 'chainName',
@@ -57,14 +73,18 @@ const generateQuestions = options => {
         });
     }
 
+    return questions;
+};
+
+export const abiQuestions = opAbi => {
+    const questions = [];
+
     questions.push({
         type: 'input',
         name: 'abisPath',
-        message: 'Enter ABIs folder directory url. example: ./src/abis',
+        message: "Enter folder directory to search for ABIs. (e.g. './abis')",
         default: '',
     });
 
     return questions;
 };
-
-export default generateQuestions;

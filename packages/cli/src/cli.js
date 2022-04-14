@@ -1,11 +1,9 @@
 import { program, Option } from 'commander';
 
 import * as actions from './actions';
-
 import constants from './contants';
-const { CHAINS } = constants;
 
-console.log(Array.from(Object.keys(CHAINS)).push('custom'));
+const { CHAINS } = constants;
 
 export function cli(argv) {
     // create config command
@@ -22,9 +20,9 @@ export function cli(argv) {
                 '-c, --chain <chain>',
                 'The target blockchain',
                 CHAINS
-            ).choices(Object.keys(CHAINS).push('custom'))
+            ).choices([...Object.keys(CHAINS), 'custom'])
         )
-        .option('-y, --yes', 'Skip prompts')
+        .option('-y, --skipPromps', 'Skip prompts')
         .action(actions.createConfig);
 
     program.parse();
