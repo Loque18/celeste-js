@@ -1,0 +1,38 @@
+{
+    "name": "@celeste-js/cli",
+    "version": "1.0.0",
+    "description": "Celeste JS CLI, allows you to handle projects that use Celeste JS",
+    "keywords": [
+        "celeste",
+        "cli",
+        "js",
+        "web3",
+        "dapp"
+    ],
+    "author": "loque <madridx2010@gmail.com>",
+    "license": "ISC",
+    "main": "src/index.js",
+    "bin": {
+        "celeste": "./bin/create-config"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Loque18/celeste-js.git",
+        "directory": "packages/cli"
+    },
+    "scripts": {
+        "test": "echo \"Error: run tests from root\" && exit 1"
+    },
+    "bugs": {
+        "url": "https://github.com/Loque18/celeste-js/issues"
+    },
+    "homepage": "https://github.com/Loque18/celeste-js#readme",
+    "dependencies": {
+        "arg": "^5.0.1",
+        "esm": "^3.2.25",
+        "inquirer": "^8.2.2"
+    }
+}

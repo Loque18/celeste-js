@@ -12,8 +12,8 @@ const {
     set_chain_id,
 } = actions;
 
-// import WalletConnect from "@walletconnect/client";
-// import QRCodeModal from "@walletconnect/qrcode-modal";
+// import WalletConnect from '@walletconnect/client';
+// import QRCodeModal from '@walletconnect/qrcode-modal';
 
 // Create a connector
 // const connector = new WalletConnect({
