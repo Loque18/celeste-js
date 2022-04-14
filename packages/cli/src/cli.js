@@ -1,73 +1,41 @@
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable no-console */
-import arg from 'arg';
-import inquirer from 'inquirer';
+import { program, Option } from 'commander';
 
-// import { createProject } from './main';
-import createTemplate from './main';
+import * as actions from './actions';
 
-function parseArgumentsIntoOptions(rawArgs) {
-    const args = arg(
-        {
-            '--git': Boolean,
-            '--yes': Boolean,
-            '--install': Boolean,
-        },
-        {
-            argv: rawArgs.slice(2),
-        }
-    );
+import constants from './contants';
+const { CHAINS } = constants;
 
-    return {
-        skipPromts: args['--yes'] || false,
-        git: args['--git'] || false,
-        template: args._[0],
-        runInstall: args['--install'] || false,
-    };
+console.log(Array.from(Object.keys(CHAINS)).push('custom'));
+
+export function cli(argv) {
+    // create config command
+    program
+        .name('celesteJS cli')
+        .description('CLI to bootstrap celeste projects')
+        .version('1.0.0');
+
+    program
+        .command('create-config')
+        .description('Create a celeste.config.js file')
+        .addOption(
+            new Option(
+                '-c, --chain <chain>',
+                'The target blockchain',
+                CHAINS
+            ).choices(Object.keys(CHAINS).push('custom'))
+        )
+        .option('-y, --yes', 'Skip prompts')
+        .action(actions.createConfig);
+
+    program.parse();
+
+    // program.option('--first').option('-s, --separator <char>');
+
+    // program.parse();
+
+    // const options = program.opts();
+    // const limit = options.first ? 1 : undefined;
+    // console.log(program.args[0].split(options.separator, limit));
 }
 
-async function promptForMissingOptions(options) {
-    const defaultTemplate = 'Javascript';
-
-    if (options.skipPromts) {
-        return {
-            ...options,
-            template: options.template || defaultTemplate,
-        };
-    }
-
-    const questions = [];
-
-    if (!options.template) {
-        questions.push({
-            type: 'list',
-            name: 'template',
-            message: 'Which template would you like to use?',
-            choices: ['Javascript', 'TypeScript'],
-        });
-    }
-    if (!options.git) {
-        questions.push({
-            type: 'confirm',
-            name: 'git',
-            message: 'Initialize a git repository?',
-            default: false,
-        });
-    }
-
-    const answers = await inquirer.prompt(questions);
-
-    return {
-        ...options,
-        template: options.template || answers.template,
-        git: options.git || answers.git,
-    };
-}
-
-export async function cli(args) {
-    let options = parseArgumentsIntoOptions(args);
-    options = await promptForMissingOptions(options);
-    await createTemplate(options);
-
-    // console.log(options);
-}
+export const asd = 'asd';
