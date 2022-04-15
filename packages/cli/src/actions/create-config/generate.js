@@ -1,9 +1,5 @@
-import constants from '../../contants';
-
-const { CHAINS } = constants;
-
 const genereateTemplate = options => {
-    const { chain } = options;
+    const { chain, smartContracts } = options;
 
     return `
 module.exports = {
@@ -12,7 +8,7 @@ module.exports = {
         chainId: '${chain.id || ''}',
         url: '${chain.url || ''}',
     },
-    smartContracts: [],
+    smartContracts: ${smartContracts},
     addressBook: {},
 };
 `;

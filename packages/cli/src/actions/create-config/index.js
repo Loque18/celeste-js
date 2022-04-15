@@ -38,20 +38,37 @@ const mapChainKeyToChainData = async userChainKey => {
     return chainData;
 };
 
-const loadAbis = async abiPath => {
-    const abis = [];
+const mapAbisToImportStatements = (abis, path) => {
+    const importStatements = abis.map(abi => {
+        const name = abi.replace(/.json/gi, '');
 
-    if (abiPath === 'none') return abis;
+        return `import ${name} from '${path}/${name}';`;
+    });
+
+    return importStatements;
+};
+
+const mapAbistoSmartContracts = async abiPath => {
+    if (abiPath === 'none') return { abis: '[]', importStatements: '' };
 
     const relativePath = path.resolve(process.cwd(), abiPath);
 
     // prettier-ignore
     const abisInDir = 
         fs.readdirSync(relativePath)
-        .filter(file => path.extname(file) === '.json');
+        .filter(file => path.extname(file).toLocaleLowerCase() === '.json');
 
-    // compute abis
-    abisInDir.map();
+    // prettier-ignore
+    const abis = abisInDir.map(abi =>        
+        `{key: "${abi.toUpperCase().replace(/.json/gi, '')}", abi: ${abi.replace(/.json/gi, '')}, address: ''}`
+    );
+
+    const abisArray = `[${abis.join(',')}]`;
+
+    return {
+        abis: abisArray,
+        importStatements: mapAbisToImportStatements(abisInDir, abiPath),
+    };
 };
 
 const createConfig = async options => {
@@ -66,16 +83,22 @@ const createConfig = async options => {
 
         if (abiAnswers.abiPath !== 'none')
             check(() => validators.validatePath(abiAnswers.abiPath));
-
-        const abis = loadAbis(abiAnswers.abiPath);
     }
+
+    const { abis: smartContracts, importStatements } =
+        await mapAbistoSmartContracts(abiAnswers.abiPath);
 
     const ops = {
         chain: chainData,
-        abiPath: abiAnswers.abiPath,
+        smartContracts,
+        importStatements,
     };
 
-    const template = genereateTemplate(ops);
+    console.log(ops);
+
+    // console.log('options', ops);
+
+    // const template = genereateTemplate(ops);
 
     // console.log(template);
 };
