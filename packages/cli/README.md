@@ -1,11 +1,15 @@
-# `cli`
+# `@celeste-js/cli`
 
-> TODO: description
+a CLI to bootstrap celesteJS projects
 
 ## Usage
 
 ```
-const cli = require('cli');
+npm i @celeste-js/cli -g
 
-// TODO: DEMONSTRATE API
+
+create config: celeste create-config -c <target-blockchain>
+
+help: celeste -h
+
 ```

@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { program, Option } from 'commander';
 
 import * as actions from './actions';
@@ -5,7 +6,7 @@ import constants from './contants';
 
 const { CHAINS } = constants;
 
-export function cli(argv) {
+export function cli() {
     // create config command
     program
         .name('celesteJS cli')
@@ -26,14 +27,4 @@ export function cli(argv) {
         .action(actions.createConfig);
 
     program.parse();
-
-    // program.option('--first').option('-s, --separator <char>');
-
-    // program.parse();
-
-    // const options = program.opts();
-    // const limit = options.first ? 1 : undefined;
-    // console.log(program.args[0].split(options.separator, limit));
 }
-
-export const asd = 'asd';

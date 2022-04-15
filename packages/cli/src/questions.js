@@ -36,6 +36,14 @@ export const chainDataQuestions = () => {
         name: 'id',
         message: 'Please enter the id of the chain',
         default: '',
+        validate: value => {
+            // eslint-disable-next-line no-restricted-globals
+            if (isNaN(value)) {
+                return 'Please enter a number';
+            }
+
+            return true;
+        },
     });
 
     questions.push({

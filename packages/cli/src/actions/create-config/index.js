@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
+import chalk from 'chalk';
 
 import {
     chainQuestions,
@@ -38,18 +39,18 @@ const mapChainKeyToChainData = async userChainKey => {
     return chainData;
 };
 
-const mapAbisToImportStatements = (abis, path) => {
+const mapAbisToImportStatements = (abis, localPath) => {
     const importStatements = abis.map(abi => {
         const name = abi.replace(/.json/gi, '');
 
-        return `import ${name} from '${path}/${name}';`;
+        return `const ${name} = require('${localPath}/${abi}');`;
     });
 
     return importStatements;
 };
 
 const mapAbistoSmartContracts = async abiPath => {
-    if (abiPath === 'none') return { abis: '[]', importStatements: '' };
+    if (abiPath === 'none') return { abis: '[]', importStatements: [] };
 
     const relativePath = path.resolve(process.cwd(), abiPath);
 
@@ -94,13 +95,18 @@ const createConfig = async options => {
         importStatements,
     };
 
-    console.log(ops);
-
     // console.log('options', ops);
 
-    // const template = genereateTemplate(ops);
-
-    // console.log(template);
+    try {
+        genereateTemplate(ops);
+        console.log(
+            '%s celeste.config.js',
+            chalk.green('✔ configuration file generated successfully')
+        );
+    } catch (err) {
+        console.log('%s', chalk.red('✘ configuration file generation failed'));
+        console.log(err);
+    }
 };
 
 export default createConfig;
