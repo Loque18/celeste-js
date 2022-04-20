@@ -1,4 +1,5 @@
-const getInjectedProvider = async () => {
+// eslint-disable-next-line no-unused-vars
+const getInjectedProvider = rpc => {
     const injected = window.ethereum;
 
     if (injected) return injected;
@@ -14,4 +15,4 @@ const requestConection = async provider => {
 
 const requestDisconection = async () => {};
 
-export default { getInjectedProvider, requestConection, requestDisconection };
+export { getInjectedProvider, requestConection, requestDisconection };

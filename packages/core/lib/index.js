@@ -1,89 +1,127 @@
-// import { store as celesteStore, actions } from '@celeste-js/store';
+import { store as celesteStore, actions } from '@celeste-js/store';
 
-// import requestConection from './providers/connected';
+import Web3 from 'web3';
 
-import getReadOnlyWeb3 from './providers/read-only';
+/* eslint-disable lines-between-class-members */
+import getReadOnlyWeb3 from './provider/types/read-only';
 
-// import { initWeb3, initStaticWeb3 } from './web3';
+import getConfig from './find-config';
 
-// const { add_contract, set_initialized } = actions;
+import SmartContractFactory from './smart-contract-utils/factory';
+import initSmartContract from './smart-contract-utils/initialize';
 
-import {
-    ConnectedProviderFactory,
-    InjectedProviderFactory,
-} from './providers/factories';
+import ProviderHandler from './provider';
 
-const onWalletConnect = async ({ type }) => {
-    const provider = await getWeb3Provider(type);
+const { set_initialized, set_web3_read_instance, set_web3_instance } = actions;
 
-    const web3 = new Web3(provider);
+const celesteEvents = {
+    ready: 'READY',
+    connected: 'CONNECTED',
+};
 
-    if (options.smartContracts) {
-        const SCFactory = new SmartContractFactory(web3);
+class CelesteJS {
+    #eventsElemnt;
+    #config;
+    #provider;
 
-        options.smartContracts.forEach(sc => {
-            initSmartContract(sc, SCFactory);
-        });
+    constructor() {
+        this.#config = getConfig();
+
+        this.#initWeb3readOnly();
+
+        this.#eventsElemnt = document.createElement('div');
+        this.#eventsElemnt.id = 'celeste-js-events';
+        document.body.appendChild(this.#eventsElemnt);
     }
 
-    // ready to do tx and read private data from blockchain
+    /* *~~*~~*~~*~~*~~* PRIVATE METHODS *~~*~~*~~*~~*~~* */
 
-    // emit ready event
-};
+    #initWeb3readOnly() {
+        const { rpc, smartContracts } = this.#config;
 
-const SmartContractFactory = function (web3Instance) {
-    return {
-        create: (abi, address) => new web3Instance.eth.Contract(abi, address),
-    };
-};
+        if (!rpc)
+            throw new Error(
+                'celeste JS: rpc must be specified in celeste.config.js'
+            );
 
-const initSmartContract = (sc, scFactory, keyTemplate = '') => {
-    const contract = scFactory.create(sc.abi, sc.address);
-    celesteStore.dispatch(add_contract(`${sc.key}${keyTemplate}`, contract));
-};
+        const web3_readonly = getReadOnlyWeb3(rpc);
 
-const initCeleste = async () => {
-    // check errors
-    if (!options.rpc) throw new Error('celeste JS: rpc is required');
+        if (smartContracts) {
+            const SCFactory = new SmartContractFactory(web3_readonly);
 
-    // init read only web3
-    const web3_readonly = getReadOnlyProvider(options.rpc);
+            smartContracts.forEach(sc => {
+                initSmartContract(sc, SCFactory, '_READ');
+            });
+        }
 
-    // init web3
-    // await initWeb3();
+        // celesteStore.dispatch(set_ro_initialized(true));
+        celesteStore.dispatch(
+            set_web3_read_instance(rpc.chainName, rpc.chainId, web3_readonly)
+        );
 
-    // // init static web3
-    // await initStaticWeb3(options.rpc);
-
-    // const { web3, web3read } = celesteStore.getState().web3Reducer;
-
-    // init smart contracts read only
-    if (options.smartContracts) {
-        const SCFactory = new SmartContractFactory(web3_readonly);
-
-        options.smartContracts.forEach(sc => {
-            initSmartContract(sc, SCFactory, '_READ');
-        });
+        this.#eventsElemnt.dispatchEvent(
+            new CustomEvent(celesteEvents.ready, {
+                detail: { web3: web3_readonly },
+            })
+        );
     }
 
-    // ready to read public data from blockchain
-};
+    async requestConection(type) {
+        const { rpc, smartContracts } = this.#config;
 
-const onConnect = async ({ type }) => {
-    if (!options.rpc) throw new Error('celeste JS: rpc is required');
+        const providerHandler = new ProviderHandler(type);
+        const provider = await providerHandler.getProvider();
+        this.#provider = provider;
 
-    let providerFactory;
+        const web3 = new Web3(provider);
 
-    if (type === 'injected') {
-        providerFactory = InjectedProviderFactory();
-    } else if (type === 'walletconnect') {
-        providerFactory = ConnectedProviderFactory();
-    } else throw new Error('Invalid provider type');
+        if (smartContracts) {
+            const SCFactory = new SmartContractFactory(web3);
 
-    const provider = await providerFactory.create();
+            smartContracts.forEach(sc => {
+                initSmartContract(sc, SCFactory);
+            });
+        }
 
-    const web3 = new Web3(provider);
-};
+        celesteStore.dispatch(set_web3_instance(web3));
+        celesteStore.dispatch(set_initialized(true));
 
-// export default initCeleste;
-export default requestConection;
+        this.#eventsElemnt.dispatchEvent(
+            new CustomEvent(celesteEvents.connected, { detail: { web3 } })
+        );
+    }
+
+    // requestDisconnection() {
+
+    // }
+
+    // requestChangeNetwork() {}
+
+    on(event, callback) {
+        this.#eventsElemnt.addEventListener(event, e => {
+            const { detail } = e;
+            callback(detail);
+        });
+    }
+}
+
+export default CelesteJS;
+
+// const Celeste = new CelesteJS();
+
+// Celeste.on('ready', web3RO => {
+//     console.log(web3RO);
+//     // read data from blockchain
+// });
+
+// // request connection
+// Celeste.requestConection();
+
+// Celeste.on('connected', () => {
+//     // ready to do tx and read private data from blockchain
+// });
+
+// // request disconnection
+// Celeste.requestDisconnection();
+
+// Celeste.on('disconnected', () => {});
