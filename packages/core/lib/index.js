@@ -10,7 +10,9 @@ import initSmartContract from './smart-contract-utils/initialize';
 
 import ProviderHandler from './provider';
 
-import Context from './actions/context';
+import ActionsContext from './actions/context';
+import ConnectedActionsStrategy from './actions/strategies/connected';
+import InjectedActionsStrategy from './actions/strategies/injected';
 
 const {
     set_initialized,
@@ -18,6 +20,7 @@ const {
     set_web3_readonly_instance,
     set_web3_instance,
     add_address,
+    set_logged_in,
 } = actions;
 
 const celesteEvents = {
@@ -25,10 +28,16 @@ const celesteEvents = {
     connected: 'CONNECTED',
 };
 
+const providers = {
+    INJECTED: 'INJECTED',
+    CONNECTED: 'CONNECTED',
+};
+
 class CelesteJS {
     #eventsElemnt;
     #config;
     #provider;
+    #providerType;
 
     constructor(config) {
         this.#config = config;
@@ -38,8 +47,6 @@ class CelesteJS {
         this.#eventsElemnt = document.createElement('div');
         this.#eventsElemnt.id = 'celeste-js-events';
         document.body.appendChild(this.#eventsElemnt);
-
-        const actionContext = new Context();
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE METHODS *~~*~~*~~*~~*~~* */
@@ -84,7 +91,7 @@ class CelesteJS {
         const { rpc, smartContracts } = this.#config;
 
         const providerHandler = new ProviderHandler(providerType);
-        const provider = await providerHandler.getProvider();
+        const provider = await providerHandler.getProvider(rpc);
         this.#provider = provider;
 
         const web3 = new Web3(provider);
@@ -105,7 +112,24 @@ class CelesteJS {
         );
     }
 
-    async requestConection(providerType) {}
+    async requestConection(providerType) {
+        this.#providerType = providerType;
+
+        if (this.#provider == null || this.#providerType !== providerType) {
+            await this.#initWeb3(providerType);
+        }
+
+        const context = new ActionsContext();
+        context.setStraegy(
+            providerType === providers.INJECTED
+                ? InjectedActionsStrategy
+                : ConnectedActionsStrategy
+        );
+
+        await context.requestConection(this.#provider);
+
+        celesteStore.dispatch(set_logged_in(true));
+    }
 
     // requestDisconnection() {
 
@@ -122,22 +146,3 @@ class CelesteJS {
 }
 
 export default CelesteJS;
-
-// const Celeste = new CelesteJS();
-
-// Celeste.on('ready', web3RO => {
-//     console.log(web3RO);
-//     // read data from blockchain
-// });
-
-// // request connection
-// Celeste.requestConection();
-
-// Celeste.on('connected', () => {
-//     // ready to do tx and read private data from blockchain
-// });
-
-// // request disconnection
-// Celeste.requestDisconnection();
-
-// Celeste.on('disconnected', () => {});

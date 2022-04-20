@@ -1,13 +1,16 @@
 import {
     // REQUEST_CONNECTION,
     SET_CHAIN_ID,
-    SET_WALLET,
+    SET_RROVIDER_WALLET,
     SET_ADDRESS,
     SET_LOGIN_STATUS,
 } from '../constants';
 
 export const set_chain_id = id => ({ type: SET_CHAIN_ID, payload: id });
-export const set_wallet = wallet => ({ type: SET_WALLET, payload: wallet });
+export const set_provider_wallet = wallet => ({
+    type: SET_RROVIDER_WALLET,
+    payload: wallet,
+});
 export const set_address = address => ({
     type: SET_ADDRESS,
     payload: address,

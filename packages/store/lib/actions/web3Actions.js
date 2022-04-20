@@ -11,13 +11,9 @@ export const set_web3_instance = web3Instance => ({
     payload: web3Instance,
 });
 
-export const set_web3_readONLY_instance = (
-    chainName,
-    chainId,
-    web3instance
-) => ({
+export const set_web3_readonly_instance = (chainId, web3instance) => ({
     type: SET_WEB3_READONLY_INSTANCE,
-    payload: { chainName, chainId, web3instance },
+    payload: { chainId, web3instance },
 });
 
 export const add_contract = (key, contract) => ({

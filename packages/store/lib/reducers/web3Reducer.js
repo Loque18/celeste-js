@@ -26,7 +26,7 @@ const reducer = (state = defaultState, { type, payload }) => {
         case SET_WEB3_READONLY_INSTANCE:
             return {
                 ...state,
-                web3read: {
+                web3readonly: {
                     [payload.chainId]: payload.web3instance,
                 },
             };

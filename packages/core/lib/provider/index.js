@@ -11,7 +11,7 @@ class ProviderHandler {
         this.#type = type;
     }
 
-    async getProvider() {
+    async getProvider(rpc) {
         let providerFactory;
 
         if (this.#type === 'injected') {
@@ -20,7 +20,7 @@ class ProviderHandler {
             providerFactory = ConnectedProviderFactory();
         }
 
-        const provider = await providerFactory.create();
+        const provider = await providerFactory.create(rpc);
 
         return provider;
     }

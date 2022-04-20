@@ -7,11 +7,11 @@ class Context {
         this.#strategy = strategy;
     }
 
-    requestConnection(provider) {
+    async requestConnection(provider) {
         return this.#strategy.requestConnection(provider);
     }
 
-    requestDisconnection(provider) {
+    async requestDisconnection(provider) {
         return this.#strategy.requestDisconnection(provider);
     }
 }
