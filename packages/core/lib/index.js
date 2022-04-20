@@ -2,13 +2,16 @@
 
 // import requestConection from './providers/connected';
 
-import { getConnectedProvider } from './providers/connected';
-import { getInjectedProvider } from './providers/injected';
 import getReadOnlyWeb3 from './providers/read-only';
 
 // import { initWeb3, initStaticWeb3 } from './web3';
 
 // const { add_contract, set_initialized } = actions;
+
+import {
+    ConnectedProviderFactory,
+    InjectedProviderFactory,
+} from './providers/factories';
 
 const onWalletConnect = async ({ type }) => {
     const provider = await getWeb3Provider(type);
@@ -39,7 +42,7 @@ const initSmartContract = (sc, scFactory, keyTemplate = '') => {
     celesteStore.dispatch(add_contract(`${sc.key}${keyTemplate}`, contract));
 };
 
-const initCeleste = async options => {
+const initCeleste = async () => {
     // check errors
     if (!options.rpc) throw new Error('celeste JS: rpc is required');
 
@@ -64,6 +67,22 @@ const initCeleste = async options => {
     }
 
     // ready to read public data from blockchain
+};
+
+const onConnect = async ({ type }) => {
+    if (!options.rpc) throw new Error('celeste JS: rpc is required');
+
+    let providerFactory;
+
+    if (type === 'injected') {
+        providerFactory = InjectedProviderFactory();
+    } else if (type === 'walletconnect') {
+        providerFactory = ConnectedProviderFactory();
+    } else throw new Error('Invalid provider type');
+
+    const provider = await providerFactory.create();
+
+    const web3 = new Web3(provider);
 };
 
 // export default initCeleste;

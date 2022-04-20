@@ -1,9 +1,5 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
-import IProvider from '../interface';
-
-//  Create WalletConnect Provider
-
 const getConnectedProvider = rpc => {
     const provider = new WalletConnectProvider({
         rpc: {
@@ -13,46 +9,44 @@ const getConnectedProvider = rpc => {
     return provider;
 };
 
-const requestConection = async () => {
+const requestConection = async provider => {
     await provider.enable();
 };
 
-const ConnectedProvider = {
-    ...IProvider,
-    getProvider,
-    requestConection,
+const requestDisconnection = async provider => {
+    await provider.disconnect();
 };
 
-const AbstractProviderFactory = {
-    create: () => {
-        throw new Error('Not implemented');
-    },
-};
+export { getConnectedProvider, requestConection, requestDisconnection };
 
-const ConnectedProviderFactory = function () {
-    return {
-        ...AbstractProviderFactory,
-        create: rpc => getConnectedProvider(rpc),
-    };
-};
+// /* eslint-disable no-unused-vars */
+// const IProviderMethods = {
+//     requestConection: async () => new Error('Not implemented'),
+//     requestDisconnection: async () => new Error('Not implemented'),
+// };
 
-const InjectedProviderFactory = function () {
-    return {
-        ...AbstractProviderFactory,
-        create: () => getInjectedProvider(),
-    };
-};
+// const getProviderMethods = provider => {
+//     return {
+//         ...IProviderMethods,
+//     };
+// };
 
-const onConnect = async ({ type }) => {
-    let providerFactory;
+// const ConnectedProviderMethodsFactory = provider => {};
 
-    if (type === 'injected') {
-        providerFactory = InjectedProviderFactory();
-    } else if (type === 'walletconnect') {
-        providerFactory = ConnectedProviderFactory();
-    } else throw new Error('Invalid provider type');
+// export default {
+//     getConnectedProvider,
+// };
 
-    const provider = await providerFactory.create();
+// // const onConnect = async ({ type }) => {
+// //     let providerFactory;
 
-    const web3 = new Web3(provider);
-};
+// //     if (type === 'injected') {
+// //         providerFactory = InjectedProviderFactory();
+// //     } else if (type === 'walletconnect') {
+// //         providerFactory = ConnectedProviderFactory();
+// //     } else throw new Error('Invalid provider type');
+
+// //     const provider = await providerFactory.create();
+
+// //     const web3 = new Web3(provider);
+// // };
