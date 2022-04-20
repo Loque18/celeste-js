@@ -17,44 +17,44 @@ export const set_login_status = status => ({
     payload: status,
 });
 
-/*  *~~*~~*~~*~~*~~* THUNK FUNCTIONS *~~*~~*~~*~~*~~* */
+// /*  *~~*~~*~~*~~*~~* THUNK FUNCTIONS *~~*~~*~~*~~*~~* */
 
-export const request_connection = () => {
-    return async (dispatch, getState) => {
-        const { ethereum } = window;
-        const { web3 } = getState().web3Reducer;
+// export const request_connection = () => {
+//     return async (dispatch, getState) => {
+//         const { ethereum } = window;
+//         const { web3 } = getState().web3Reducer;
 
-        try {
-            const accounts = await ethereum.request({
-                method: 'eth_requestAccounts',
-            });
-            dispatch(set_login_status(true));
-            dispatch(set_chain_id(await web3.eth.getChainId()));
-            dispatch(set_address(accounts[0]));
-        } catch (e) {
-            // throw e;
-        }
-    };
-};
+//         try {
+//             const accounts = await ethereum.request({
+//                 method: 'eth_requestAccounts',
+//             });
+//             dispatch(set_login_status(true));
+//             dispatch(set_chain_id(await web3.eth.getChainId()));
+//             dispatch(set_address(accounts[0]));
+//         } catch (e) {
+//             // throw e;
+//         }
+//     };
+// };
 
-export const request_disconnection = () => {
-    return async dispatch => {
-        dispatch(set_login_status(false));
-        dispatch(set_wallet(null));
-        dispatch(set_address(null));
-    };
-};
+// export const request_disconnection = () => {
+//     return async dispatch => {
+//         dispatch(set_login_status(false));
+//         dispatch(set_wallet(null));
+//         dispatch(set_address(null));
+//     };
+// };
 
-export const request_change_network = networkId => {
-    return async () => {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: `0x${networkId.toString(16)}` }], // chainId must be in hexadecimal numbers
-            });
-        } catch (e) {
-            // alert(e);
-            // console.log("ERROR REQUESTING CHANGE NETWORK", e);
-        }
-    };
-};
+// export const request_change_network = networkId => {
+//     return async () => {
+//         try {
+//             await window.ethereum.request({
+//                 method: 'wallet_switchEthereumChain',
+//                 params: [{ chainId: `0x${networkId.toString(16)}` }], // chainId must be in hexadecimal numbers
+//             });
+//         } catch (e) {
+//             // alert(e);
+//             // console.log("ERROR REQUESTING CHANGE NETWORK", e);
+//         }
+//     };
+// };

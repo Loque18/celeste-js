@@ -1,14 +1,16 @@
 import {
     SET_WEB3_INSTANCE,
-    SET_WEB3_READ_INSTANCE,
-    ADD_CONTRACT,
+    SET_WEB3_READONLY_INSTANCE,
     SET_INITIALIZED,
+    SET_READONLY_INITIALIZED,
+    ADD_CONTRACT,
 } from '../constants';
 
 const defaultState = {
     web3: null,
-    web3read: null,
+    web3readonly: null,
     initialized: false,
+    readonly_initialized: false,
     contracts: [],
 };
 
@@ -21,30 +23,35 @@ const reducer = (state = defaultState, { type, payload }) => {
                 web3: payload,
             };
 
-        case SET_WEB3_READ_INSTANCE:
+        case SET_WEB3_READONLY_INSTANCE:
             return {
                 ...state,
                 web3read: {
                     [payload.chainId]: payload.web3instance,
-                    [payload.chainName]: payload.web3instance,
                 },
             };
-
-        case ADD_CONTRACT: {
-            const { contracts } = { ...state };
-            contracts[payload.key] = payload.contract;
-
-            return {
-                ...state,
-                contracts,
-            };
-        }
 
         case SET_INITIALIZED:
             return {
                 ...state,
                 initialized: payload,
             };
+
+        case SET_READONLY_INITIALIZED:
+            return {
+                ...state,
+                readonly_initialized: payload,
+            };
+
+        case ADD_CONTRACT: {
+            return {
+                ...state,
+                contracts: {
+                    ...state.contracts,
+                    [payload.key]: payload.contract,
+                },
+            };
+        }
 
         default:
             return { ...state };
