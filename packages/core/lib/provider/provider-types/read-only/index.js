@@ -7,6 +7,4 @@ const getReadOnlyWeb3 = rpc => {
     // store.dispatch(set_web3_read_instance(chainName, chainId, web3));
 };
 
-const intantiateReadOnlySmartContracts = (web3, contract) => {};
-
 export default getReadOnlyWeb3;

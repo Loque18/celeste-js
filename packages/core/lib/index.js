@@ -3,16 +3,22 @@ import { store as celesteStore, actions } from '@celeste-js/store';
 import Web3 from 'web3';
 
 /* eslint-disable lines-between-class-members */
-import getReadOnlyWeb3 from './provider/types/read-only';
-
-import getConfig from './find-config';
+import getReadOnlyWeb3 from './provider/provider-types/read-only';
 
 import SmartContractFactory from './smart-contract-utils/factory';
 import initSmartContract from './smart-contract-utils/initialize';
 
 import ProviderHandler from './provider';
 
-const { set_initialized, set_web3_read_instance, set_web3_instance } = actions;
+import Context from './actions/context';
+
+const {
+    set_initialized,
+    set_initialized_readonly,
+    set_web3_readonly_instance,
+    set_web3_instance,
+    add_address,
+} = actions;
 
 const celesteEvents = {
     ready: 'READY',
@@ -24,14 +30,16 @@ class CelesteJS {
     #config;
     #provider;
 
-    constructor() {
-        this.#config = getConfig();
+    constructor(config) {
+        this.#config = config;
 
         this.#initWeb3readOnly();
 
         this.#eventsElemnt = document.createElement('div');
         this.#eventsElemnt.id = 'celeste-js-events';
         document.body.appendChild(this.#eventsElemnt);
+
+        const actionContext = new Context();
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE METHODS *~~*~~*~~*~~*~~* */
@@ -56,8 +64,14 @@ class CelesteJS {
 
         // celesteStore.dispatch(set_ro_initialized(true));
         celesteStore.dispatch(
-            set_web3_read_instance(rpc.chainName, rpc.chainId, web3_readonly)
+            set_web3_readonly_instance(
+                rpc.chainName,
+                rpc.chainId,
+                web3_readonly
+            )
         );
+
+        celesteStore.dispatch(set_initialized_readonly(true));
 
         this.#eventsElemnt.dispatchEvent(
             new CustomEvent(celesteEvents.ready, {
@@ -66,10 +80,10 @@ class CelesteJS {
         );
     }
 
-    async requestConection(type) {
+    async #initWeb3(providerType) {
         const { rpc, smartContracts } = this.#config;
 
-        const providerHandler = new ProviderHandler(type);
+        const providerHandler = new ProviderHandler(providerType);
         const provider = await providerHandler.getProvider();
         this.#provider = provider;
 
@@ -90,6 +104,8 @@ class CelesteJS {
             new CustomEvent(celesteEvents.connected, { detail: { web3 } })
         );
     }
+
+    async requestConection(providerType) {}
 
     // requestDisconnection() {
 

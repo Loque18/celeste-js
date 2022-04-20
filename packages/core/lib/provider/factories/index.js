@@ -1,11 +1,5 @@
-import {
-    getConnectedProvider,
-    requestConection as requestConnectedConnection,
-} from '../types/connected';
-import {
-    getInjectedProvider,
-    requestConection as requestInjectedConection,
-} from '../types/injected';
+import getConnectedProvider from '../provider-types/connected';
+import getInjectedProvider from '../provider-types/injected';
 
 const AbstractProviderFactory = {
     // eslint-disable-next-line no-unused-vars
@@ -17,20 +11,14 @@ const AbstractProviderFactory = {
 function ConnectedProviderFactory() {
     return {
         ...AbstractProviderFactory,
-        create: () => ({
-            getProvider: getConnectedProvider,
-            requestConection: requestConnectedConnection,
-        }),
+        create: getConnectedProvider,
     };
 }
 
 function InjectedProviderFactory() {
     return {
         ...AbstractProviderFactory,
-        create: () => ({
-            getProvider: getInjectedProvider,
-            requestConection: requestInjectedConection,
-        }),
+        create: getInjectedProvider,
     };
 }
 

@@ -2,7 +2,6 @@ import { InjectedProviderFactory, ConnectedProviderFactory } from './factories';
 
 class ProviderHandler {
     #type;
-    #providerMethods;
 
     constructor(type) {
         if (type !== 'injected' || type !== 'walletconnect') {
@@ -21,20 +20,10 @@ class ProviderHandler {
             providerFactory = ConnectedProviderFactory();
         }
 
-        const providerMethods = await providerFactory.create();
-
-        this.#providerMethods = providerMethods;
-
-        const provider = await providerMethods.getProvider();
+        const provider = await providerFactory.create();
 
         return provider;
     }
-
-    async requestConection(provider) {
-        const { requestConection } = this.#providerMethods;
-        await requestConection(provider);
-    }
-    // async requestDisconnection(provider) {}
 }
 
 export default ProviderHandler;
