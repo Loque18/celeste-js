@@ -119,13 +119,13 @@ class CelesteJS {
         }
 
         const context = new ActionsContext();
-        context.setStraegy(
+        context.setStrategy(
             providerType === providers.INJECTED
-                ? InjectedActionsStrategy
-                : ConnectedActionsStrategy
+                ? new InjectedActionsStrategy()
+                : new ConnectedActionsStrategy()
         );
 
-        // await context.requestConnection(this.#provider);
+        await context.requestConnection(this.#provider);
 
         // celesteStore.dispatch(set_login_status(true));
     }

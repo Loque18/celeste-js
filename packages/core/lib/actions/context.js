@@ -3,16 +3,16 @@ import IActionsStrategy from './strategies/IActionsStrategy';
 class Context {
     #strategy = { ...IActionsStrategy };
 
-    setStraegy(strategy) {
+    setStrategy(strategy) {
         this.#strategy = strategy;
     }
 
     async requestConnection(provider) {
-        return this.#strategy.requestConnection(provider);
+        await this.#strategy.requestConnection(provider);
     }
 
     async requestDisconnection(provider) {
-        return this.#strategy.requestDisconnection(provider);
+        // await this.#strategy.requestDisconnection(provider);
     }
 }
 
