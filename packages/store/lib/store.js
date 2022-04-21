@@ -1,5 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { createStore, combineReducers } from 'redux';
 
 import web3Reducer from './reducers/web3Reducer';
 import walletReducer from './reducers/walletReducer';
@@ -11,6 +10,6 @@ const reducer = combineReducers({
     addressBookReducer,
 });
 
-const store = createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer);
 
 export default store;

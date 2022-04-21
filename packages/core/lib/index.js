@@ -9,6 +9,7 @@ import SmartContractFactory from './smart-contract-utils/factory';
 import initSmartContract from './smart-contract-utils/initialize';
 
 import ProviderHandler from './provider';
+import { providers } from './contants';
 
 import ActionsContext from './actions/context';
 import ConnectedActionsStrategy from './actions/strategies/connected';
@@ -16,21 +17,16 @@ import InjectedActionsStrategy from './actions/strategies/injected';
 
 const {
     set_initialized,
-    set_initialized_readonly,
+    set_readonly_initialized,
     set_web3_readonly_instance,
     set_web3_instance,
     add_address,
-    set_logged_in,
+    set_login_status,
 } = actions;
 
 const celesteEvents = {
     ready: 'READY',
     connected: 'CONNECTED',
-};
-
-const providers = {
-    INJECTED: 'INJECTED',
-    CONNECTED: 'CONNECTED',
 };
 
 class CelesteJS {
@@ -42,11 +38,11 @@ class CelesteJS {
     constructor(config) {
         this.#config = config;
 
-        this.#initWeb3readOnly();
-
         this.#eventsElemnt = document.createElement('div');
         this.#eventsElemnt.id = 'celeste-js-events';
         document.body.appendChild(this.#eventsElemnt);
+
+        this.#initWeb3readOnly();
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE METHODS *~~*~~*~~*~~*~~* */
@@ -71,14 +67,10 @@ class CelesteJS {
 
         // celesteStore.dispatch(set_ro_initialized(true));
         celesteStore.dispatch(
-            set_web3_readonly_instance(
-                rpc.chainName,
-                rpc.chainId,
-                web3_readonly
-            )
+            set_web3_readonly_instance(rpc.chainId, web3_readonly)
         );
 
-        celesteStore.dispatch(set_initialized_readonly(true));
+        celesteStore.dispatch(set_readonly_initialized(true));
 
         this.#eventsElemnt.dispatchEvent(
             new CustomEvent(celesteEvents.ready, {
@@ -112,7 +104,14 @@ class CelesteJS {
         );
     }
 
-    async requestConection(providerType) {
+    async requestConnection(providerType) {
+        // check validity of providerType
+        if (
+            providerType == null ||
+            !Object.values(providers).includes(providerType)
+        )
+            throw new Error('Invalid provider type');
+
         this.#providerType = providerType;
 
         if (this.#provider == null || this.#providerType !== providerType) {
@@ -126,9 +125,9 @@ class CelesteJS {
                 : ConnectedActionsStrategy
         );
 
-        await context.requestConection(this.#provider);
+        // await context.requestConnection(this.#provider);
 
-        celesteStore.dispatch(set_logged_in(true));
+        // celesteStore.dispatch(set_login_status(true));
     }
 
     // requestDisconnection() {

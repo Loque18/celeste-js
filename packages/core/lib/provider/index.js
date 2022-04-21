@@ -1,10 +1,12 @@
 import { InjectedProviderFactory, ConnectedProviderFactory } from './factories';
 
+import { providers } from '../contants';
+
 class ProviderHandler {
     #type;
 
     constructor(type) {
-        if (type !== 'injected' || type !== 'walletconnect') {
+        if (!Object.values(providers).includes(type)) {
             throw new Error('Invalid provider type');
         }
 
@@ -14,11 +16,10 @@ class ProviderHandler {
     async getProvider(rpc) {
         let providerFactory;
 
-        if (this.#type === 'injected') {
+        if (this.#type === providers.INJECTED)
             providerFactory = InjectedProviderFactory();
-        } else if (this.#type === 'walletconnect') {
+        else if (this.#type === providers.CONNECTED)
             providerFactory = ConnectedProviderFactory();
-        }
 
         const provider = await providerFactory.create(rpc);
 

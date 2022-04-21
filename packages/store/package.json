@@ -1,6 +1,6 @@
 {
     "name": "@celeste-js/store",
-    "version": "2.0.6",
+    "version": "2.1.2",
     "description": "redux store for celeste",
     "keywords": [
         "web3",
@@ -35,7 +35,6 @@
         "build": "cross-env NODE_ENV=production babel ./lib --out-dir dist --copy-files"
     },
     "dependencies": {
-        "redux": "^4.1.2",
-        "redux-thunk": "^2.4.1"
+        "redux": "^4.1.2"
     }
 }
