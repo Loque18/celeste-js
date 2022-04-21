@@ -6,6 +6,9 @@ const IActionsStrategy = {
     requestDisconnection: async provider => {
         throw new Error('Not implemented');
     },
+    getProvider: async rpc => {
+        throw new Error('Not implemented');
+    },
 };
 
 export default IActionsStrategy;

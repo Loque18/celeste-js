@@ -1,10 +1,14 @@
 import IActionsStrategy from './strategies/IActionsStrategy';
 
-class Context {
+class ProviderContext {
     #strategy = { ...IActionsStrategy };
 
     setStrategy(strategy) {
         this.#strategy = strategy;
+    }
+
+    async getProvider(rpc) {
+        return this.#strategy.getProvider(rpc);
     }
 
     async requestConnection(provider) {
@@ -12,8 +16,8 @@ class Context {
     }
 
     async requestDisconnection(provider) {
-        // await this.#strategy.requestDisconnection(provider);
+        await this.#strategy.requestDisconnection(provider);
     }
 }
 
-export default Context;
+export default ProviderContext;
