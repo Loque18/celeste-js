@@ -36,9 +36,10 @@ class ProviderProxy {
         this.#context.setStrategy(new StrategiesMap[type]());
     }
 
-    async init(rpc) {
+    async getProvider(rpc) {
         const provider = await this.#context.getProvider(rpc);
         this.provider = provider;
+        return provider;
     }
 
     async requestConnection() {

@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { store as celesteStore, actions } from '@celeste-js/store';
 
 import Web3 from 'web3';
@@ -17,6 +18,8 @@ const {
     set_web3_instance,
     add_address,
     set_login_status,
+    set_address,
+    set_chain_id,
 } = actions;
 
 const celesteEvents = {
@@ -24,44 +27,106 @@ const celesteEvents = {
     connected: 'CONNECTED',
 };
 
+const validateConfig = config => {
+    const { rpc, smartContracts } = config;
+
+    // prettier-ignore
+    if(!rpc) throw new Error('celeste JS: rpc must be specified in celeste.config.js');
+
+    // prettier-ignore
+    if(smartContracts && !Array.isArray(smartContracts))
+        throw new Error('celeste JS: smartContracts must be specified in celeste.config.js');
+};
+
+const initSmartContracts2 = (web3, smartContracts, key = '') => {
+    if(!smartContracts) return;
+    const SCFactory = new SmartContractFactory(web3);
+
+    smartContracts.forEach(sc => initSmartContract(sc, SCFactory, key));
+}
+
 class CelesteJS {
     #config;
     #providerProxy;
 
     constructor(config) {
+        validateConfig(config);
         this.#config = config;
 
         // instantiate provider proxy
         this.#providerProxy = new ProviderProxy(providers.ONLYREAD);
 
-        this.#initWeb3Readonly();
+        // 1. init static web3
+        const web3RO = this.#getWeb3Instance(providers.ONLYREAD);
+        celesteStore.dispatch(set_web3_readonly_instance(this.#config.rpc.chainId, web3RO));
+
+        // 2. check if connected
+        (async () => {
+            const keys = Object.keys(providers);
+
+            let connected = false;
+            let res;
+            for (let i = 0; i < keys.length; i++) {
+                const currentKey = keys[i];
+
+                // eslint-disable-next-line no-await-in-loop
+                res = await this.#checkIfConnected(providers[currentKey]);
+
+                if (res.accArr) {
+                    connected = true;
+                    break;
+                }
+            }
+
+
+            // 3. if connected set web3 instance
+            if (connected) {
+                const { accArr, web3 } = res;
+
+                initSmartContracts2(web3, this.#config.smartContracts);
+
+                celesteStore.dispatch(set_login_status(true));
+                celesteStore.dispatch(set_address(accArr[0]));
+                celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+                celesteStore.dispatch(set_initialized(true));
+            }
+
+        })();
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE API *~~*~~*~~*~~*~~* */
 
-    #initWeb3Readonly() {
-        this.#providerProxy.setType(providers.ONLYREAD);
+    
+    #getWeb3Instance(providerType) {
+        const { rpc } = this.#config;
 
-        const { rpc, smartContracts } = this.#config;
+        this.#providerProxy.setType(providerType);
+        const web3 = new Web3(this.#providerProxy.getProvider(rpc));
+        return web3;
+    }
+    
+
+
+    // returns connected account in case of success
+    async #checkIfConnected(type) {
+        const { rpc } = this.#config;
+
+        this.#providerProxy.setType(type);
 
         // prettier-ignore
-        if (!rpc) throw new Error('celeste JS: rpc must be specified in celeste.config.js');
+        const web3 = new Web3(this.#providerProxy.getProvider(rpc));
 
-        const web3_readonly = new Web3(this.#providerProxy.getProvider(rpc));
+        const accArr = await web3.eth.getAccounts();
 
-        if (smartContracts) {
-            const SCFactory = new SmartContractFactory(web3_readonly);
+        if (accArr.length === 0) return null;
 
-            smartContracts.forEach(sc =>
-                initSmartContract(sc, SCFactory, '_READ')
-            );
-        }
+        return {
+            accArr,
+            web3,
+        };
     }
 
-    // returns bool
-    #checkIfConnected(type) {
-        this.#providerProxy.setType(type);
-    }
+    /* *~~*~~*~~*~~*~~* PUBLIC API *~~*~~*~~*~~*~~* */
 }
 
 export default CelesteJS;
