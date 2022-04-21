@@ -1,7 +1,8 @@
+/* eslint-disable import/prefer-default-export */
 const providers = {
     INJECTED: 'INJECTED',
     CONNECTED: 'CONNECTED',
-    ONLYREAD: 'ONLYREAD',
+    READONLY: 'READONLY',
 };
 
 export { providers };

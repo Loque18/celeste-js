@@ -1,53 +1,55 @@
 import { providers } from '../contants';
 
 import ProviderContext from '../provider-context';
-import InjectedActionsStrategy from '../provider-context/strategies/injected';
-import ConnectedActionsStrategy from '../provider-context/strategies/connected';
-import ReadonlyStrategy from '../provider-context/strategies/readonly';
+import StrategiesMap from '../provider-context/strategies';
 
-const StrategiesMap = {
-    [providers.INJECTED]: InjectedActionsStrategy,
-    [providers.CONNECTED]: ConnectedActionsStrategy,
-    [providers.READONLY]: ReadonlyStrategy,
-};
+import {validateProviderType} from '../validators';
+
 
 class ProviderProxy {
-    #type;
+    #currentType;
 
     #context;
 
-    provider;
+    #providers = {};
 
-    constructor(type) {
-        if (!Object.values(providers).includes(type)) {
-            throw new Error('Invalid provider type');
-        }
-        this.#type = type;
+    constructor(rpc) {
+        
+        this.#currentType = providers.READONLY;
 
-        this.#context = new ProviderContext();
-        this.#context.setStrategy(new StrategiesMap[type]());
+        this.#context = new ProviderContext();        
+        
+        // get all type of providers
+        Object.values(providers).forEach(async providerType => {
+            this.#context.setStrategy(new StrategiesMap[providerType]());
+            this.#providers[providerType] = await this.#getProvider(rpc);
+        });
+
+        // set readonly provider as default
+        this.#context.setStrategy(providers.READONLY);
     }
+
+    // api
 
     setType(type) {
-        if (!Object.values(providers).includes(type)) {
-            throw new Error('Invalid provider type');
-        }
-        this.#type = type;
-        this.#context.setStrategy(new StrategiesMap[type]());
+        validateProviderType(type);
+        this.#currentType = type;
+        this.#context.setStrategy(new StrategiesMap[type]());        
     }
 
-    async getProvider(rpc) {
+    // proxy 
+
+    async #getProvider(rpc) {
         const provider = await this.#context.getProvider(rpc);
-        this.provider = provider;
         return provider;
     }
 
     async requestConnection() {
-        await this.#context.requestConnection(this.provider);
+        await this.#context.requestConnection(this.#providers[this.#currentType]);
     }
 
     async requestDisconnection() {
-        await this.#context.requestDisconnection(this.provider);
+        await this.#context.requestDisconnection(this.#providers[this.#currentType]);
     }
 }
 
