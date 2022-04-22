@@ -3,8 +3,7 @@ import { providers } from '../contants';
 import ProviderContext from '../provider-context';
 import StrategiesMap from '../provider-context/strategies';
 
-import {validateProviderType} from '../validators';
-
+import { validateProviderType } from '../validators';
 
 class ProviderProxy {
     #currentType;
@@ -14,15 +13,21 @@ class ProviderProxy {
     #providers = {};
 
     constructor(rpc) {
-        
         this.#currentType = providers.READONLY;
 
-        this.#context = new ProviderContext();        
-        
+        this.#context = new ProviderContext();
+
         // get all type of providers
-        Object.values(providers).forEach(async providerType => {
+        Object.values(providers).forEach(providerType => {
             this.#context.setStrategy(new StrategiesMap[providerType]());
-            this.#providers[providerType] = await this.#getProvider(rpc);
+
+            try {
+                this.#providers[providerType] = this.#getProvider(rpc);
+            } catch (e) {
+                // lo
+                console.log(`Provider of type ${providerType} not found`);
+                this.#providers[providerType] = null;
+            }
         });
 
         // set readonly provider as default
@@ -34,22 +39,38 @@ class ProviderProxy {
     setType(type) {
         validateProviderType(type);
         this.#currentType = type;
-        this.#context.setStrategy(new StrategiesMap[type]());        
+        this.#context.setStrategy(new StrategiesMap[type]());
     }
 
-    // proxy 
+    // proxy
 
-    async #getProvider(rpc) {
-        const provider = await this.#context.getProvider(rpc);
+    #getProvider(rpc) {
+        const provider = this.#context.getProvider(rpc);
         return provider;
     }
 
+    getProvider(type) {
+        validateProviderType(type);
+        return this.#providers[type];
+    }
+
     async requestConnection() {
-        await this.#context.requestConnection(this.#providers[this.#currentType]);
+        await this.#context.requestConnection(
+            this.#providers[this.#currentType]
+        );
     }
 
     async requestDisconnection() {
-        await this.#context.requestDisconnection(this.#providers[this.#currentType]);
+        await this.#context.requestDisconnection(
+            this.#providers[this.#currentType]
+        );
+    }
+
+    async getConnection() {
+        const connection = await this.#context.getConnection(
+            this.#providers[this.#currentType]
+        );
+        return connection;
     }
 }
 

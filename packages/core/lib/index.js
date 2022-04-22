@@ -11,7 +11,6 @@ import initSmartContract from './smart-contract-utils/initialize';
 import ProviderProxy from './provider-proxy';
 import { providers } from './contants';
 
-
 import { validateConfig, validateProviderType } from './validators';
 
 const {
@@ -30,16 +29,12 @@ const celesteEvents = {
     connected: 'CONNECTED',
 };
 
-
-
 const initSmartContracts2 = (web3, smartContracts, key = '') => {
-    if(!smartContracts) return;
+    if (!smartContracts) return;
     const SCFactory = new SmartContractFactory(web3);
 
     smartContracts.forEach(sc => initSmartContract(sc, SCFactory, key));
-}
-
-
+};
 
 class CelesteJS {
     #config;
@@ -51,101 +46,67 @@ class CelesteJS {
 
         // instantiate provider proxy
         this.#providerProxy = new ProviderProxy(config.rpc);
-        
-
-
-
 
         // 1. init static web3
-        // const web3RO = this.#getWeb3Instance(providers.READONLY);
-        // celesteStore.dispatch(set_web3_readonly_instance(this.#config.rpc.chainId, web3RO));
+        const web3RO = new Web3(
+            this.#providerProxy.getProvider(providers.READONLY)
+        );
+        celesteStore.dispatch(
+            set_web3_readonly_instance(this.#config.rpc.chainId, web3RO)
+        );
+        celesteStore.dispatch(set_readonly_initialized(true));
+        initSmartContracts2(web3RO, this.#config.smartContracts, '_READ');
 
         // // 2. check if connected
-        // (async () => {
-        //     const keys = Object.keys(providers);
+        (async () => {
+            const res = await Promise.all([
+                this.#checkIfConnected(providers.INJECTED),
+                this.#checkIfConnected(providers.CONNECTED),
+            ]);
 
-        //     let connected = false;
-        //     let res;
-        //     for (let i = 0; i < keys.length; i++) {
-        //         const currentKey = keys[i];
+            console.log(res);
 
-        //         // eslint-disable-next-line no-await-in-loop
-        //         res = await this.#checkIfConnected(providers[currentKey]);
-
-        //         if (res.accArr) {
-        //             connected = true;
-        //             break;
-        //         }
-        //     }
-
-
-        //     // 3. if connected set web3 instance
-        //     if (connected) {
-        //         const { accArr, web3 } = res;
-
-        //         initSmartContracts2(web3, this.#config.smartContracts);
-
-        //         celesteStore.dispatch(set_login_status(true));
-        //         celesteStore.dispatch(set_address(accArr[0]));
-        //         celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
-        //         celesteStore.dispatch(set_initialized(true));
-        //     }
-
-        // })();
+            // const connected = res.find(r => r !== null);
+            // 3. if connected set web3 instance
+            // if (connected) {
+            //     console.log("connected");
+            //     const { accArr, web3 } = connected;
+            //     initSmartContracts2(web3, this.#config.smartContracts);
+            //     celesteStore.dispatch(set_login_status(true));
+            //     celesteStore.dispatch(set_address(accArr[0]));
+            //     celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+            //     celesteStore.dispatch(set_initialized(true));
+            // }
+        })();
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE API *~~*~~*~~*~~*~~* */
 
-    
-    // #getWeb3Instance(providerType) {
-    //     const { rpc } = this.#config;
-
-    //     this.#providerProxy.setType(providerType);
-    //     const web3 = new Web3(this.#providerProxy.getProvider(rpc));
-    //     return web3;
-    // }
-    
-
-
     // returns connected account in case of success
-    // async #checkIfConnected(type) {
-    //     const { rpc } = this.#config;
+    async #checkIfConnected(type) {
+        this.#providerProxy.setType(type);
+        const connection = await this.#providerProxy.getConnection(type);
 
-    //     this.#providerProxy.setType(type);
-
-    //     // prettier-ignore
-    //     const web3 = new Web3(this.#providerProxy.getProvider(rpc));
-
-    //     const accArr = await web3.eth.getAccounts();
-
-    //     if (accArr.length === 0) return null;
-
-    //     return {
-    //         accArr,
-    //         web3,
-    //     };
-    // }
+        return connection;
+    }
 
     /* *~~*~~*~~*~~*~~* PUBLIC API *~~*~~*~~*~~*~~* */
 
-    // async requestConnection(providerType) {
+    async requestConnection(providerType) {
+        validateProviderType(providerType);
 
-    //     validateProviderType(providerType);
+        this.#providerProxy.setType(providerType);
 
-    //     this.#providerProxy.setType(providerType);
-    //     this.#providerProxy.getProvider(this.#config.rpc);
+        try {
+            this.#providerProxy.requestConnection();
 
-    //     try {
-    //         this.#providerProxy.requestConnection();
-
-    //         // celesteStore.dispatch(set_login_status(true));
-	// 		// celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
-	// 		// celesteStore.dispatch(set_address(accounts[0]));
-    //     }
-    //     catch (e) {
-    //         throw new Error(e);
-    //     }
-    // }
+            // celesteStore.dispatch(set_login_status(true));
+            // celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+            // celesteStore.dispatch(set_address(accounts[0]));
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
 
     // async requestDisconnection(providerType) {
     //     validateProviderType(providerType);
@@ -160,10 +121,6 @@ class CelesteJS {
     //         throw new Error(e);
     //     }
     // }
-
-
-
-
 }
 
 export default CelesteJS;

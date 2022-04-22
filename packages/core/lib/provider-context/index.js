@@ -7,7 +7,7 @@ class ProviderContext {
         this.#strategy = strategy;
     }
 
-    async getProvider(rpc) {
+    getProvider(rpc) {
         return this.#strategy.getProvider(rpc);
     }
 
@@ -17,6 +17,11 @@ class ProviderContext {
 
     async requestDisconnection(provider) {
         await this.#strategy.requestDisconnection(provider);
+    }
+
+    async getConnection(provider) {
+        const res = await this.#strategy.getConnection(provider);
+        return res;
     }
 }
 
