@@ -21,7 +21,6 @@ const {
     set_readonly_initialized,
     set_web3_readonly_instance,
     set_web3_instance,
-    add_address,
     set_provider_wallet,
     set_login_status,
     set_address,
@@ -124,7 +123,6 @@ class CelesteJS {
     async requestDisconnection() {
         const providerType =
             celesteStore.getState().walletReducer.providerWallet;
-        console.log('providerType', providerType);
         this.#providerProxy.setType(providerType);
 
         try {
