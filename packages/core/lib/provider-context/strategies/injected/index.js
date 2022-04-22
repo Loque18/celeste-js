@@ -11,7 +11,7 @@ const getProvider = () => {
 
 const requestConnection = async provider => {
     try {
-        provider.request({
+        await provider.request({
             method: 'eth_requestAccounts',
         });
     } catch (e) {
@@ -19,7 +19,7 @@ const requestConnection = async provider => {
     }
 };
 
-// const requestDisconnection = async () => {};
+const requestDisconnection = async () => {};
 
 const getConnection = async provider => {
     const web3 = new Web3(provider);
@@ -40,7 +40,7 @@ function InjectedProviderStrategy() {
         requestConnection,
         getProvider,
         getConnection,
-        // requestDisconnection,
+        requestDisconnection,
     };
 }
 

@@ -22,15 +22,10 @@ const requestConnection = async provider => {
 };
 
 const requestDisconnection = async provider => {
-    try {
-        await provider.disconnect();
-    } catch (e) {
-        throw new Error(e);
-    }
+    await provider.disconnect();
 };
 
 const getConnection = async provider => {
-    console.log(provider.connector.connected);
     if (!provider.connector.connected) return null;
     await provider.enable();
 
