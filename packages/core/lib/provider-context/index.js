@@ -23,6 +23,24 @@ class ProviderContext {
         const res = await this.#strategy.getConnection(provider);
         return res;
     }
+
+    /* *~~*~~*~~*~~*~~* EVENTS ~~*~~*~~*~~*~~* */
+
+    onAccountsChanged(accounts) {
+        this.#strategy.events.accountsChanged(accounts);
+    }
+
+    onChainChanged(chainId) {
+        this.#strategy.events.chainChanged(chainId);
+    }
+
+    onDisconnected(args) {
+        this.#strategy.events.disconnected(args);
+    }
+
+    onConnected(args) {
+        this.#strategy.events.connected(args);
+    }
 }
 
 export default ProviderContext;

@@ -11,7 +11,21 @@ const IActionsStrategy = {
     },
     getConnection: async provider => {
         throw new Error('Not implemented');
-    }    
+    },
+    events: {
+        accountsChanged: accounts => {
+            console.log('accountsChanged', accounts);
+        },
+        chainChanged: chainId => {
+            console.log('chainChanged', chainId);
+        },
+        disconnected: args => {
+            console.log('disconnected', args);
+        },
+        connected: args => {
+            console.log('connected', args);
+        },
+    },
 };
 
 export default IActionsStrategy;

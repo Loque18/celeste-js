@@ -19,19 +19,65 @@ class ProviderProxy {
 
         // get all type of providers
         Object.values(providers).forEach(providerType => {
+            // instantiate strategies
             this.#context.setStrategy(new StrategiesMap[providerType]());
 
             try {
+                // instantiate providers
                 this.#providers[providerType] = this.#getProvider(rpc);
             } catch (e) {
-                // lo
+                // handle error
                 console.log(`Provider of type ${providerType} not found`);
+
                 this.#providers[providerType] = null;
             }
         });
 
         // set readonly provider as default
         this.#context.setStrategy(providers.READONLY);
+
+        // register events
+        this.registerEvents();
+    }
+
+    // events
+    registerEvents() {
+        const ethereum = this.#providers[providers.INJECTED];
+        const walletconnect = this.#providers[providers.CONNECTED];
+
+        if (ethereum) {
+            ethereum.on('accountsChanged', accounts => {
+                if (this.#currentType !== providers.INJECTED) return;
+                this.#context.onAccountsChanged(accounts);
+            });
+
+            ethereum.on('chainChanged', chainId => {
+                if (this.#currentType !== providers.INJECTED) return;
+                this.#context.onChainChanged(chainId);
+            });
+
+            ethereum.on('disconnect', error => {
+                if (this.#currentType !== providers.INJECTED) return;
+                this.#context.onDisconnected(error);
+            });
+        }
+
+        if (walletconnect) {
+            walletconnect.on('accountsChanged', accounts => {
+                if (this.#currentType !== providers.CONNECTED) return;
+                this.#context.onAccountsChanged(accounts);
+            });
+
+            walletconnect.on('chainChanged', chainId => {
+                if (this.#currentType !== providers.CONNECTED) return;
+                this.#context.onChainChanged(chainId);
+            });
+
+            walletconnect.on('disconnect', (code, reason) => {
+                if (this.#currentType !== providers.CONNECTED) return;
+                this.#context.onDisconnected({ code, reason });
+            });
+        }
     }
 
     // api

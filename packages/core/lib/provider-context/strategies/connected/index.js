@@ -41,6 +41,18 @@ const getConnection = async provider => {
     };
 };
 
+const events = {
+    accountsChanged: accounts => {
+        console.log('accountsChanged', accounts);
+    },
+    chainChanged: chainId => {
+        console.log('chainChanged', chainId);
+    },
+    disconnected: args => {
+        console.log('disconnected', args);
+    },
+};
+
 function ConnectedActionsStrategy() {
     return {
         ...IActionsStrategy,
@@ -48,6 +60,10 @@ function ConnectedActionsStrategy() {
         requestConnection,
         requestDisconnection,
         getConnection,
+        events: {
+            ...IActionsStrategy.events,
+            ...events,
+        },
     };
 }
 

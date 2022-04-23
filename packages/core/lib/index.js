@@ -138,6 +138,8 @@ class CelesteJS {
             throw new Error(e);
         }
     }
+
+    /* *~~*~~*~~*~~*~~* PUBLIC EVENTS *~~*~~*~~*~~*~~* */
 }
 
 export default CelesteJS;
