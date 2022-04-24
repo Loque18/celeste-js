@@ -56,6 +56,11 @@ class ProviderProxy {
                 this.#context.onChainChanged(chainId);
             });
 
+            ethereum.on('connect', args => {
+                if (this.#currentType !== providers.INJECTED) return;
+                this.#context.onConnect(args);
+            });
+
             ethereum.on('disconnect', error => {
                 if (this.#currentType !== providers.INJECTED) return;
                 this.#context.onDisconnected(error);
@@ -75,7 +80,7 @@ class ProviderProxy {
 
             walletconnect.on('disconnect', (code, reason) => {
                 if (this.#currentType !== providers.CONNECTED) return;
-                this.#context.onDisconnected({ code, reason });
+                this.#context.onDisconnect({ code, reason });
             });
         }
     }

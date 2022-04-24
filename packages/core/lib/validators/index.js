@@ -27,7 +27,7 @@ const validateIfLoggedIn = () => {
 
     if (isLoggedIn) {
         // eslint-disable-next-line no-console
-        console.warn('celeste JS: you are already logged in');
+        // console.warn('celeste JS: you are already logged in');
         return true;
     }
 

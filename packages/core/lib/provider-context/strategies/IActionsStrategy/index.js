@@ -14,16 +14,16 @@ const IActionsStrategy = {
     },
     events: {
         accountsChanged: accounts => {
-            console.log('accountsChanged', accounts);
+            console.warn('event accountsChanged not implemented');
         },
         chainChanged: chainId => {
-            console.log('chainChanged', chainId);
+            console.warn('event accountsChanged not implemented');
         },
-        disconnected: args => {
-            console.log('disconnected', args);
+        disconnect: args => {
+            console.warn('event accountsChanged not implemented');
         },
-        connected: args => {
-            console.log('connected', args);
+        connect: args => {
+            console.warn('event accountsChanged not implemented');
         },
     },
 };

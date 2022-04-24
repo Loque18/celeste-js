@@ -73,13 +73,13 @@ class CelesteJS {
             if (connected) {
                 const { accounts, web3 } = connected;
                 initSmartContracts2(web3, this.#config.smartContracts);
-                celesteStore.dispatch(set_login_status(true));
-                celesteStore.dispatch(set_address(accounts[0]));
-                celesteStore.dispatch(set_web3_instance(web3));
                 // prettier-ignore
                 celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+                celesteStore.dispatch(set_web3_instance(web3));
                 celesteStore.dispatch(set_initialized(true));
                 celesteStore.dispatch(set_provider_wallet(type));
+                celesteStore.dispatch(set_address(accounts[0]));
+                celesteStore.dispatch(set_login_status(true));
             }
         })();
     }
@@ -97,6 +97,7 @@ class CelesteJS {
 
     async requestConnection(providerType) {
         validateProviderType(providerType);
+        // if user is already logged in, do nothing
         if (validateIfLoggedIn()) return;
 
         this.#providerProxy.setType(providerType);
@@ -106,34 +107,26 @@ class CelesteJS {
 
             // prettier-ignore
             const web3 = new Web3(this.#providerProxy.getProvider(providerType));
-
-            const acc = await web3.eth.getAccounts();
-
-            celesteStore.dispatch(set_login_status(true));
-            celesteStore.dispatch(set_address(acc[0]));
             celesteStore.dispatch(set_web3_instance(web3));
+            celesteStore.dispatch(set_provider_wallet(providerType));
+            celesteStore.dispatch(set_login_status(true));
             celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
             celesteStore.dispatch(set_initialized(true));
-            celesteStore.dispatch(set_provider_wallet(providerType));
         } catch (e) {
             throw new Error(e);
         }
     }
 
     async requestDisconnection() {
+        // if user is not logged in, do nothing
+        if (!validateIfLoggedIn()) return;
+
         const providerType =
             celesteStore.getState().walletReducer.providerWallet;
         this.#providerProxy.setType(providerType);
 
         try {
             this.#providerProxy.requestDisconnection();
-
-            celesteStore.dispatch(set_login_status(false));
-            celesteStore.dispatch(set_address(null));
-            celesteStore.dispatch(set_web3_instance(null));
-            celesteStore.dispatch(set_chain_id(null));
-            celesteStore.dispatch(set_initialized(false));
-            celesteStore.dispatch(set_provider_wallet(null));
         } catch (e) {
             throw new Error(e);
         }

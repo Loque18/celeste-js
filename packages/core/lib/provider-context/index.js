@@ -34,12 +34,12 @@ class ProviderContext {
         this.#strategy.events.chainChanged(chainId);
     }
 
-    onDisconnected(args) {
-        this.#strategy.events.disconnected(args);
+    onDisconnect(args) {
+        this.#strategy.events.disconnect(args);
     }
 
-    onConnected(args) {
-        this.#strategy.events.connected(args);
+    onConnect(args) {
+        this.#strategy.events.connect(args);
     }
 }
 

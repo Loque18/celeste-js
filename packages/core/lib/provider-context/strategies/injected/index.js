@@ -1,5 +1,16 @@
+import { store as celesteStore, actions } from '@celeste-js/store';
+
 import Web3 from 'web3';
 import IActionsStrategy from '../IActionsStrategy';
+
+const {
+    set_address,
+    set_login_status,
+    set_web3_instance,
+    set_chain_id,
+    set_initialized,
+    set_provider_wallet,
+} = actions;
 
 const getProvider = () => {
     const injected = window.ethereum;
@@ -19,7 +30,13 @@ const requestConnection = async provider => {
     }
 };
 
-const requestDisconnection = async () => {};
+const requestDisconnection = async () => {
+    celesteStore.dispatch(set_login_status(false));
+    celesteStore.dispatch(set_web3_instance(null));
+    celesteStore.dispatch(set_chain_id(null));
+    celesteStore.dispatch(set_initialized(false));
+    celesteStore.dispatch(set_provider_wallet(null));
+};
 
 const getConnection = async provider => {
     const web3 = new Web3(provider);
@@ -36,13 +53,28 @@ const getConnection = async provider => {
 
 const events = {
     accountsChanged: accounts => {
-        console.log('accountsChanged', accounts);
+        if (accounts.length > 0) {
+            celesteStore.dispatch(set_address(accounts[0]));
+        } else {
+            celesteStore.dispatch(set_login_status(false));
+            celesteStore.dispatch(set_address(null));
+            celesteStore.dispatch(set_web3_instance(null));
+            celesteStore.dispatch(set_chain_id(null));
+            celesteStore.dispatch(set_initialized(false));
+            celesteStore.dispatch(set_provider_wallet(null));
+        }
     },
+
     chainChanged: chainId => {
-        console.log('chainChanged', chainId);
+        celesteStore.dispatch(set_chain_id(+chainId.toString(16)));
     },
-    disconnected: args => {
-        console.log('disconnected', args);
+
+    connect: args => {
+        console.log('connect', args);
+    },
+
+    disconnecd: args => {
+        console.log('disconnect', args);
     },
 };
 
