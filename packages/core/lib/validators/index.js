@@ -34,4 +34,14 @@ const validateIfLoggedIn = () => {
     return false;
 };
 
-export { validateProviderType, validateConfig, validateIfLoggedIn };
+const validateChainId = chainId => {
+    if (typeof chainId !== 'number' || chainId < 0)
+        throw new Error('celeste JS: chainId must be a number greater than 0');
+};
+
+export {
+    validateProviderType,
+    validateConfig,
+    validateIfLoggedIn,
+    validateChainId,
+};

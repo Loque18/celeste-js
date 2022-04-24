@@ -14,6 +14,7 @@ import {
     validateConfig,
     validateProviderType,
     validateIfLoggedIn,
+    validateChainId,
 } from './validators';
 
 const {
@@ -38,9 +39,12 @@ class CelesteJS {
     #config;
     #providerProxy;
 
+    configread;
+
     constructor(config) {
         validateConfig(config);
         this.#config = config;
+        this.configread = config;
 
         // instantiate provider proxy
         this.#providerProxy = new ProviderProxy(config.rpc);
@@ -82,6 +86,8 @@ class CelesteJS {
                 celesteStore.dispatch(set_login_status(true));
             }
         })();
+
+        Object.freeze(this);
     }
 
     /* *~~*~~*~~*~~*~~* PRIVATE API *~~*~~*~~*~~*~~* */
@@ -102,19 +108,15 @@ class CelesteJS {
 
         this.#providerProxy.setType(providerType);
 
-        try {
-            await this.#providerProxy.requestConnection();
+        await this.#providerProxy.requestConnection();
 
-            // prettier-ignore
-            const web3 = new Web3(this.#providerProxy.getProvider(providerType));
-            celesteStore.dispatch(set_web3_instance(web3));
-            celesteStore.dispatch(set_provider_wallet(providerType));
-            celesteStore.dispatch(set_login_status(true));
-            celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
-            celesteStore.dispatch(set_initialized(true));
-        } catch (e) {
-            throw new Error(e);
-        }
+        // prettier-ignore
+        const web3 = new Web3(this.#providerProxy.getProvider(providerType));
+        celesteStore.dispatch(set_web3_instance(web3));
+        celesteStore.dispatch(set_provider_wallet(providerType));
+        celesteStore.dispatch(set_login_status(true));
+        celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+        celesteStore.dispatch(set_initialized(true));
     }
 
     async requestDisconnection() {
@@ -125,11 +127,19 @@ class CelesteJS {
             celesteStore.getState().walletReducer.providerWallet;
         this.#providerProxy.setType(providerType);
 
-        try {
-            this.#providerProxy.requestDisconnection();
-        } catch (e) {
-            throw new Error(e);
-        }
+        await this.#providerProxy.requestDisconnection();
+    }
+
+    async requestChangeNetwork(chainId) {
+        validateChainId(chainId);
+        // if user is not logged in, do nothing
+        if (!validateIfLoggedIn()) return;
+
+        const providerType =
+            celesteStore.getState().walletReducer.providerWallet;
+        this.#providerProxy.setType(providerType);
+
+        await this.#providerProxy.requestChangeNetwork(chainId);
     }
 
     /* *~~*~~*~~*~~*~~* PUBLIC EVENTS *~~*~~*~~*~~*~~* */

@@ -21,13 +21,9 @@ const getProvider = () => {
 };
 
 const requestConnection = async provider => {
-    try {
-        await provider.request({
-            method: 'eth_requestAccounts',
-        });
-    } catch (e) {
-        throw new Error(e);
-    }
+    await provider.request({
+        method: 'eth_requestAccounts',
+    });
 };
 
 const requestDisconnection = async () => {
@@ -36,6 +32,13 @@ const requestDisconnection = async () => {
     celesteStore.dispatch(set_chain_id(null));
     celesteStore.dispatch(set_initialized(false));
     celesteStore.dispatch(set_provider_wallet(null));
+};
+
+const requestChangeNetwork = async (provider, chainId) => {
+    await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${chainId.toString(16)}` }], // chainId must be in hexadecimal numbers
+    });
 };
 
 const getConnection = async provider => {
@@ -85,6 +88,7 @@ function InjectedProviderStrategy() {
         getProvider,
         getConnection,
         requestDisconnection,
+        requestChangeNetwork,
         events: {
             ...IActionsStrategy.events,
             ...events,

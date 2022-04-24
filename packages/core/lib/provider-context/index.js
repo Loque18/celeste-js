@@ -19,6 +19,10 @@ class ProviderContext {
         await this.#strategy.requestDisconnection(provider);
     }
 
+    async requestChangeNetwork(provider, chainId) {
+        await this.#strategy.requestChangeNetwork(provider, chainId);
+    }
+
     async getConnection(provider) {
         const res = await this.#strategy.getConnection(provider);
         return res;

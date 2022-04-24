@@ -16,15 +16,15 @@ const getProvider = rpc => {
 };
 
 const requestConnection = async provider => {
-    try {
-        await provider.enable();
-    } catch (e) {
-        throw new Error(e);
-    }
+    await provider.enable();
 };
 
 const requestDisconnection = async provider => {
     await provider.disconnect();
+};
+
+const requestChangeNetwork = async (provider, chainId) => {
+    throw new Error(`Please change to network ${chainId}`);
 };
 
 const getConnection = async provider => {
@@ -87,6 +87,7 @@ function ConnectedActionsStrategy() {
         getProvider,
         requestConnection,
         requestDisconnection,
+        requestChangeNetwork,
         getConnection,
         events: {
             ...IActionsStrategy.events,

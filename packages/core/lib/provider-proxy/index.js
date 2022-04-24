@@ -117,6 +117,13 @@ class ProviderProxy {
         );
     }
 
+    async requestChangeNetwork(chainId) {
+        await this.#context.requestChangeNetwork(
+            this.#providers[this.#currentType],
+            chainId
+        );
+    }
+
     async getConnection() {
         const connection = await this.#context.getConnection(
             this.#providers[this.#currentType]
