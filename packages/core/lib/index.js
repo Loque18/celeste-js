@@ -84,6 +84,7 @@ class CelesteJS {
                 celesteStore.dispatch(set_provider_wallet(type));
                 celesteStore.dispatch(set_address(accounts[0]));
                 celesteStore.dispatch(set_login_status(true));
+                this.#providerProxy.setType(type);
             }
         })();
 
