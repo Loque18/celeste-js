@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 const CelesteContext = React.createContext(null);
@@ -6,15 +6,19 @@ const CelesteContext = React.createContext(null);
 // Export your custom hooks if you wish to use them in other files.
 
 export const useCeleste = () => {
-    const context = React.useContext(CelesteContext);
-    if (context === undefined) {
+    const celeste = useContext(CelesteContext);
+    if (celeste === undefined) {
         throw new Error('useCeleste must be used within a CelesteProvider');
     }
-    return context.value;
+    return celeste;
 };
 
 const CelesteProvider = ({ celeste, children }) => {
-    return <CelesteContext value={celeste}>{children}</CelesteContext>;
+    return (
+        <CelesteContext.Provider value={celeste}>
+            {children}
+        </CelesteContext.Provider>
+    );
 };
 
 CelesteProvider.propTypes = {

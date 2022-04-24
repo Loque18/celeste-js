@@ -6,7 +6,7 @@ import { useCelesteSelector } from '../celeste-store-provider';
 const ConnectedWrapper = ({ children, disconnectedComponent }) => {
     const wallet = useCelesteSelector(state => state.walletReducer);
 
-    return wallet.isLoggedIn ? children : disconnectedComponent;
+    return wallet.isLoggedIn ? children : disconnectedComponent || null;
 };
 
 ConnectedWrapper.propTypes = {

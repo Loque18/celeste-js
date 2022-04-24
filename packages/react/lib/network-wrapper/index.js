@@ -11,7 +11,7 @@ const NetworkWrapper = ({ children, info }) => {
     const { walletReducer } = useCelesteSelector(state => state);
 
     // prettier-ignore
-    return Object.keys(celeste.configread.rpc).includes(walletReducer.chainId.toString()) ? (
+    return celeste.configread.rpc.chainId.toString() == walletReducer.chainId ? (
         children
     ) : (
         <div>{info}</div>

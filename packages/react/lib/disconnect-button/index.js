@@ -4,16 +4,25 @@ import PropTypes from 'prop-types';
 
 import { useCeleste } from '../celeste-provider';
 
-const DisconnectBtn = ({ className, children, ...rest }) => {
+const DisconnectBtn = ({ className, children, onErrorCB, ...rest }) => {
     const celeste = useCeleste();
 
-    const onClick = () => {
-        celeste.requestDisconnect();
+    const onClick = async () => {
+        try {
+            await celeste.requestDisconnection();
+        } catch (e) {
+            onErrorCB(e);
+        }
     };
 
     return (
         <div>
-            <button className={className} onClick={onClick} {...rest}>
+            <button
+                className={className}
+                onClick={onClick}
+                type="button"
+                {...rest}
+            >
                 {children || 'Disconnect wallet'}
             </button>
         </div>
@@ -23,6 +32,7 @@ const DisconnectBtn = ({ className, children, ...rest }) => {
 DisconnectBtn.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node,
+    onErrorCB: PropTypes.func.isRequired,
 };
 
 export default DisconnectBtn;

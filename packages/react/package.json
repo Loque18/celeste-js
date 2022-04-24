@@ -21,7 +21,8 @@
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",
         "clear": "rmdir /s /q dist && mkdir dist",
-        "build": " cross-env NODE_ENV=production babel ./lib --out-dir dist --copy-files"
+        "build": "npm run clear && cross-env NODE_ENV=production babel ./lib --out-dir dist --copy-files",
+        "copy": "Xcopy D:\\orcania\\celeste-js\\packages\\react\\dist D:\\orcania\\mt\\src\\components\\celeste\\dist2 /E/H/C/I/Y"
     },
     "bugs": {
         "url": "https://github.com/Loque18/celeste-js/issues"

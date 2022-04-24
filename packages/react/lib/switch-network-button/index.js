@@ -13,16 +13,16 @@ const SwithNetworkButton = ({
 }) => {
     const celeste = useCeleste();
 
-    const onClick = () => {
+    const onClick = async () => {
         try {
-            celeste.requestChangeNetwork(chainId);
+            await celeste.requestChangeNetwork(chainId);
         } catch (e) {
             onErrorCB(e);
         }
     };
 
     return (
-        <button className={className} onClick={onClick} {...rest}>
+        <button className={className} onClick={onClick} type="button" {...rest}>
             {children}
         </button>
     );
