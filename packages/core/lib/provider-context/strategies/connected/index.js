@@ -16,14 +16,7 @@ const getProvider = rpc => {
 };
 
 const requestConnection = async provider => {
-    const ac = new AbortController();
-
-    try {
-        await provider.enable({ signal: ac.signal });
-    } catch (e) {
-        ac.abort();
-        throw e;
-    }
+    await provider.enable();
 };
 
 const requestDisconnection = async provider => {
