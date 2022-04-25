@@ -2,6 +2,10 @@
 
 ## versions
 
-### 0.0.6
+### 1.0.0
 
-    added initialize function
+-   First official release for Celeste JS core
+
+### 1.0.1
+
+-   v1.0.0 contained alpha code
