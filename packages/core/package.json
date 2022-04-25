@@ -20,7 +20,7 @@
         "directory": "packages/core"
     },
     "scripts": {
-        "test": "echo no tests for core",
+        "test": "cross-env SKIP_METAMASK_SETUP=true PRIVATE_KEY=f7d485df7da7c7e57f384cd53ac92f7aab782fc44f523d208d337a3b6444d192 NETWORK_NAME='BSC' RPC_URL=https://bsc-dataseed.binance.org/ CHAIN_ID=56 SYMBOL=BNB  npx synpress open",
         "clean": "rmdir /s /q dist",
         "build": "npm run clean && cross-env NODE_ENV=production babel ./lib --out-dir dist --copy-files",
         "copy": "Xcopy D:\\orcania\\celeste-js\\packages\\core\\dist D:\\orcania\\mt\\src\\components\\celeste\\dist /E/H/C/I/Y"
@@ -33,9 +33,12 @@
         "@babel/runtime": "^7.17.9",
         "@celeste-js/store": "^2.1.2",
         "@walletconnect/web3-provider": "^1.7.7",
+        "dotenv": "^16.0.0",
         "web3": "^1.7.3"
     },
     "devDependencies": {
-        "@babel/plugin-transform-runtime": "^7.17.0"
+        "@babel/plugin-transform-runtime": "^7.17.0",
+        "@synthetixio/synpress": "^1.2.0",
+        "cross-env": "^7.0.3"
     }
 }

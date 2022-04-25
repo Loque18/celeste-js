@@ -26,5 +26,13 @@ export function cli() {
         .option('-y, --skipPromps', 'Skip prompts')
         .action(actions.createConfig);
 
+    // program
+    //     .command('create-proxies')
+    //     .description('Create proxies for all smart contracts')
+    //     .addArgument(
+    //         new A
+    //     )
+    //     .action(actions.createProxies);
+
     program.parse();
 }
