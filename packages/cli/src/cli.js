@@ -2,7 +2,7 @@
 import { program, Option } from 'commander';
 
 import * as actions from './actions';
-import constants from './contants';
+import constants from './constants';
 
 const { CHAINS } = constants;
 

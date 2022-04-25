@@ -1,4 +1,4 @@
-import { providers } from '../../contants';
+import { providers } from '../../constants';
 
 import InjectedActionsStrategy from './injected';
 import ConnectedActionsStrategy from './connected';

@@ -1,6 +1,6 @@
 import { store as celesteStore } from '@celeste-js/store';
 
-import { providers } from '../contants';
+import { providers } from '../constants';
 
 const validateProviderType = providerType => {
     if (!providerType)

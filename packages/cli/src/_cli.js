@@ -14,7 +14,7 @@ import generateBaseConfig from './base';
 
 import generateQuestions from './questions';
 
-import constants from './contants';
+import constants from './constants';
 
 const { chains } = constants;
 

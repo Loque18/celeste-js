@@ -13,7 +13,7 @@ import { check, validators } from '../../validators';
 
 import genereateTemplate from './generate';
 
-import constants from '../../contants';
+import constants from '../../constants';
 
 const { CHAINS } = constants;
 

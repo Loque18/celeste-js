@@ -1,4 +1,4 @@
-import { providers } from '../contants';
+import { providers } from '../constants';
 
 import ProviderContext from '../provider-context';
 import StrategiesMap from '../provider-context/strategies';

@@ -8,7 +8,7 @@ import SmartContractFactory from './smart-contract-utils/factory';
 import initSmartContract from './smart-contract-utils/initialize';
 
 import ProviderProxy from './provider-proxy';
-import { providers } from './contants';
+import { providers } from './constants';
 
 import {
     validateConfig,
