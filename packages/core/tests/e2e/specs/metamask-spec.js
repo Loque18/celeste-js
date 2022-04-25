@@ -1,5 +1,16 @@
 import CelesteJS from '../../../lib';
 
+const celeste = new CelesteJS({
+    rpc: {
+        chainId: '1',
+        url: 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    },
+    smartContracts: [],
+    addressBook: {
+        ZERO: '0x0000000000000000000000000000000000000000',
+    },
+});
+
 describe('Metamask', () => {
     context('Test commands', () => {
         // todo: clear the state of extension and test different combinations of setupMetamask with private key & custom network
@@ -14,8 +25,9 @@ describe('Metamask', () => {
         });
 
         it(`acceptMetamaskAccess should accept connection request to metamask`, () => {
-            cy.visit('/celeste');
-            cy.get('#metamaskbutton').click();
+            cy.visit('/');
+            celeste.requestConnection('INJECTED');
+            // cy.get('#metamaskbutton').click();
             cy.acceptMetamaskAccess().then(connected => {
                 expect(connected).to.be.true;
             });
@@ -26,10 +38,10 @@ describe('Metamask', () => {
             // );
         });
 
-        it(`getNetwork should return network by default`, () => {
-            const toyBasadoDiv = cy.contains('Toy basado');
+        // it(`getNetwork should return network by default`, () => {
+        //     const toyBasadoDiv = cy.contains('Toy basado');
 
-            expect(toyBasadoDiv).to.exist;
-        });
+        //     expect(toyBasadoDiv).to.exist;
+        // });
     });
 });
