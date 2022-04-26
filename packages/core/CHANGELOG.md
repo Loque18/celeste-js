@@ -10,6 +10,6 @@
 
 -   v1.0.0 contained alpha code
 
-### 1.0.3
+### 1.0.3 & 1.0.4
 
 -   fix typo in constants folder
