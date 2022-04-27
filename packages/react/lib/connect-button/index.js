@@ -14,9 +14,10 @@ const getAddressReduced = address =>
     `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const ConnectBtn = ({
+    children,
     className,
     providerType,
-    children,
+    onSuccessCB,
     onErrorCB,
     ...rest
 }) => {
@@ -28,6 +29,7 @@ const ConnectBtn = ({
     const onClick = async () => {
         try {
             await celeste.requestConnection(providerType);
+            if (onSuccessCB) onSuccessCB();
         } catch (e) {
             onErrorCB(e);
         }
@@ -45,6 +47,7 @@ const ConnectBtn = ({
 ConnectBtn.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
+    onSuccessCB: PropTypes.func,
     onErrorCB: PropTypes.func.isRequired,
     providerType: PropTypes.oneOf(Object.values(providers)),
 };
