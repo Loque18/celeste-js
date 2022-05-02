@@ -21,3 +21,7 @@
 ### 1.0.5
 
 -   fixed bug when injected wallet not connected
+
+### 1.1.0
+
+-   added support for provider events

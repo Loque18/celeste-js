@@ -8,7 +8,7 @@ import SmartContractFactory from './smart-contract-utils/factory';
 import initSmartContract from './smart-contract-utils/initialize';
 
 import ProviderProxy from './provider-proxy';
-import { providers } from './constants';
+import { providers, events } from './constants';
 
 import {
     validateConfig,
@@ -38,6 +38,7 @@ const initSmartContracts2 = (web3, smartContracts, key = '') => {
 class CelesteJS {
     #config;
     #providerProxy;
+    #events = {};
 
     configread;
 
@@ -149,6 +150,14 @@ class CelesteJS {
     }
 
     /* *~~*~~*~~*~~*~~* PUBLIC EVENTS *~~*~~*~~*~~*~~* */
+    on(event, callback) {
+        if (!Object.values(events).includes(event))
+            throw new Error(`Event ${event} does not exist`);
+
+        this.#events[event] = callback;
+
+        this.#providerProxy.registerEvents(this.#events);
+    }
 }
 
 export default CelesteJS;

@@ -27,7 +27,8 @@ class ProviderProxy {
                 this.#providers[providerType] = this.#getProvider(rpc);
             } catch (e) {
                 // handle error
-                console.log(`Provider of type ${providerType} not found`);
+                // eslint-disable-next-line no-console
+                console.warn(`Provider of type ${providerType} not found`);
 
                 this.#providers[providerType] = null;
             }
@@ -41,19 +42,33 @@ class ProviderProxy {
     }
 
     // events
-    registerEvents() {
+    registerEvents(customEvents = null) {
         const ethereum = this.#providers[providers.INJECTED];
         const walletconnect = this.#providers[providers.CONNECTED];
 
         if (ethereum) {
+            // clear previous listeners
+            ethereum.removeAllListeners();
+
             ethereum.on('accountsChanged', accounts => {
                 if (this.#currentType !== providers.INJECTED) return;
+
+                // call celeste event callback
                 this.#context.onAccountsChanged(accounts);
+
+                if (customEvents && customEvents.accountsChanged)
+                    customEvents.accountsChanged(accounts, ethereum);
             });
 
             ethereum.on('chainChanged', chainId => {
                 if (this.#currentType !== providers.INJECTED) return;
+
+                // call celeste event callback
                 this.#context.onChainChanged(chainId);
+
+                if (customEvents && customEvents.chainChanged) {
+                    customEvents.chainChanged(chainId, ethereum);
+                }
             });
 
             ethereum.on('connect', args => {
@@ -68,19 +83,30 @@ class ProviderProxy {
         }
 
         if (walletconnect) {
+            walletconnect.removeAllListeners();
+
             walletconnect.on('accountsChanged', accounts => {
                 if (this.#currentType !== providers.CONNECTED) return;
                 this.#context.onAccountsChanged(accounts);
+
+                if (customEvents && customEvents.accountsChanged)
+                    customEvents.accountsChanged(accounts, walletconnect);
             });
 
             walletconnect.on('chainChanged', chainId => {
                 if (this.#currentType !== providers.CONNECTED) return;
                 this.#context.onChainChanged(chainId);
+
+                if (customEvents && customEvents.chainChanged)
+                    customEvents.chainChanged(chainId, walletconnect);
             });
 
             walletconnect.on('disconnect', (code, reason) => {
                 if (this.#currentType !== providers.CONNECTED) return;
                 this.#context.onDisconnect({ code, reason });
+
+                if (customEvents && customEvents.disconnect)
+                    customEvents.disconnect({ code, reason }, walletconnect);
             });
         }
     }

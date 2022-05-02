@@ -5,4 +5,10 @@ const providers = {
     READONLY: 'READONLY',
 };
 
-export { providers };
+const events = {
+    ACCOUNTS_CHANGED: 'accountsChanged',
+    CHAIN_CHANGED: 'chainChanged',
+    DISCONNECT: 'disconnect',
+};
+
+export { providers, events };
