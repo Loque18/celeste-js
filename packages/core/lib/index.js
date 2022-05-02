@@ -68,24 +68,25 @@ class CelesteJS {
 
             const connected = res.find(r => r !== null);
 
+            if (!connected) return;
+
             const type =
                 res.indexOf(connected) === 0
                     ? providers.INJECTED
                     : providers.CONNECTED;
 
             // 3. if connected set web3 instance
-            if (connected) {
-                const { accounts, web3 } = connected;
-                initSmartContracts2(web3, this.#config.smartContracts);
-                // prettier-ignore
-                celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
-                celesteStore.dispatch(set_web3_instance(web3));
-                celesteStore.dispatch(set_initialized(true));
-                celesteStore.dispatch(set_provider_wallet(type));
-                celesteStore.dispatch(set_address(accounts[0]));
-                celesteStore.dispatch(set_login_status(true));
-                this.#providerProxy.setType(type);
-            }
+
+            const { accounts, web3 } = connected;
+            initSmartContracts2(web3, this.#config.smartContracts);
+            // prettier-ignore
+            celesteStore.dispatch(set_chain_id(await web3.eth.getChainId()));
+            celesteStore.dispatch(set_web3_instance(web3));
+            celesteStore.dispatch(set_initialized(true));
+            celesteStore.dispatch(set_provider_wallet(type));
+            celesteStore.dispatch(set_address(accounts[0]));
+            celesteStore.dispatch(set_login_status(true));
+            this.#providerProxy.setType(type);
         })();
 
         Object.freeze(this);
@@ -111,8 +112,12 @@ class CelesteJS {
 
         await this.#providerProxy.requestConnection();
 
+        const provider = this.#providerProxy.getProvider(providerType);
+
+        if (provider === null) return;
+
         // prettier-ignore
-        const web3 = new Web3(this.#providerProxy.getProvider(providerType));
+        const web3 = new Web3(provider);
         celesteStore.dispatch(set_web3_instance(web3));
         celesteStore.dispatch(set_provider_wallet(providerType));
         celesteStore.dispatch(set_login_status(true));

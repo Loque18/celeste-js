@@ -21,6 +21,11 @@ const getProvider = () => {
 };
 
 const requestConnection = async provider => {
+    if (provider == null) {
+        window.open('https://metamask.io/', '_blank');
+        return;
+    }
+
     await provider.request({
         method: 'eth_requestAccounts',
     });
@@ -42,6 +47,7 @@ const requestChangeNetwork = async (provider, chainId) => {
 };
 
 const getConnection = async provider => {
+    if (provider === null) return null;
     const web3 = new Web3(provider);
 
     const accounts = await web3.eth.getAccounts();
@@ -76,7 +82,7 @@ const events = {
         console.log('connect', args);
     },
 
-    disconnecd: args => {
+    disconnect: args => {
         console.log('disconnect', args);
     },
 };

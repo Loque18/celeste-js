@@ -10,6 +10,14 @@
 
 -   v1.0.0 contained alpha code
 
+### 1.0.2
+
+-   Fixed an issue that didn't allow qr to complete connection
+
 ### 1.0.3 & 1.0.4
 
--   fix typo in constants folder
+-   fixed typo in constants folder
+
+### 1.0.5
+
+-   fixed bug when injected wallet not connected
