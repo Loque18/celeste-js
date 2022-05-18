@@ -3,7 +3,7 @@ import * as actions from '../lib/actions';
 
 const {
     set_web3_instance,
-    set_web3_readonly_instance,
+    add_web3_readonly_instance,
     set_initialized,
     set_readonly_initialized,
     add_contract,
@@ -33,13 +33,16 @@ describe('web3 reducer', () => {
         });
     });
 
-    it('should handle a web3 readonly instance being added to the reducer', () => {
-        const web3readonly_instance = '<instance>';
-        const chainId = '<chainId>';
+    it('should handle two web3 readonly instance being added to the reducer', () => {
+        const web3readonly_instance1 = '<instance1>';
+        const chainId1 = '<chainId_1>';
 
-        const action = set_web3_readonly_instance(
-            chainId,
-            web3readonly_instance
+        const web3readonly_instance2 = '<instance2>';
+        const chainId2 = '<chainId_2>';
+
+        const action = add_web3_readonly_instance(
+            chainId1,
+            web3readonly_instance1
         );
         const previousState = defaultState;
         const nextState = web3Reducer(previousState, action);
@@ -47,7 +50,22 @@ describe('web3 reducer', () => {
         expect(nextState).toEqual({
             ...previousState,
             web3readonly: {
-                [chainId]: web3readonly_instance,
+                [chainId1]: web3readonly_instance1,
+            },
+        });
+
+        const action2 = add_web3_readonly_instance(
+            chainId2,
+            web3readonly_instance2
+        );
+
+        const nextState2 = web3Reducer(nextState, action2);
+
+        expect(nextState2).toEqual({
+            ...nextState,
+            web3readonly: {
+                [chainId1]: web3readonly_instance1,
+                [chainId2]: web3readonly_instance2,
             },
         });
     });

@@ -1,6 +1,6 @@
 import {
     SET_WEB3_INSTANCE,
-    SET_WEB3_READONLY_INSTANCE,
+    ADD_WEB3_READONLY_INSTANCE,
     SET_INITIALIZED,
     SET_READONLY_INITIALIZED,
     ADD_CONTRACT,
@@ -23,10 +23,11 @@ const reducer = (state = defaultState, { type, payload }) => {
                 web3: payload,
             };
 
-        case SET_WEB3_READONLY_INSTANCE:
+        case ADD_WEB3_READONLY_INSTANCE:
             return {
                 ...state,
                 web3readonly: {
+                    ...state.web3readonly,
                     [payload.chainId]: payload.web3instance,
                 },
             };

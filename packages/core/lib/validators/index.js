@@ -12,14 +12,22 @@ const validateProviderType = providerType => {
 };
 
 const validateConfig = config => {
-    const { rpc, smartContracts } = config;
+    const { rpcs, smartContracts } = config;
 
     // prettier-ignore
-    if(!rpc) throw new Error('celeste JS: rpc must be specified in celeste.config.js');
+    if(!rpcs) throw new Error('celeste JS: rpc must be specified in celeste.config.js');
+
+    if (Object.keys(rpcs).length === 0)
+        throw new Error(
+            'celeste JS: config rpcs must contain at least one element'
+        );
 
     // prettier-ignore
-    if(smartContracts && !Array.isArray(smartContracts))
-        throw new Error('celeste JS: smartContracts must be specified in celeste.config.js');
+    if(smartContracts){
+        if(!Array.isArray(smartContracts)){
+            throw new Error('celeste JS: smartContracts must be specified in celeste.config.js');
+        }
+    }
 };
 
 const validateIfLoggedIn = () => {
