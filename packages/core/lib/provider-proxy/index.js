@@ -78,7 +78,7 @@ class ProviderProxy {
 
             ethereum.on('disconnect', error => {
                 if (this.#currentType !== providers.INJECTED) return;
-                this.#context.onDisconnected(error);
+                this.#context.onDisconnect(error);
             });
         }
 
