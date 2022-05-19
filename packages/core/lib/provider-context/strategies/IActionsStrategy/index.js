@@ -9,7 +9,7 @@ const IActionsStrategy = {
     requestChangeNetwork: async (provider, chainId) => {
         throw new Error('Not implemented');
     },
-    getProvider: rpc => {
+    getProvider: rpcs => {
         throw new Error('Not implemented');
     },
     getConnection: async provider => {

@@ -3,6 +3,8 @@ import { store as celesteStore, actions } from '@celeste-js/store';
 import Web3 from 'web3';
 import IActionsStrategy from '../IActionsStrategy';
 
+import { removeWriteSmartContracts } from '../../../smart-contract-utils/initialize';
+
 const {
     set_address,
     set_login_status,
@@ -65,6 +67,7 @@ const events = {
         if (accounts.length > 0) {
             celesteStore.dispatch(set_address(accounts[0]));
         } else {
+            removeWriteSmartContracts();
             celesteStore.dispatch(set_login_status(false));
             celesteStore.dispatch(set_address(null));
             celesteStore.dispatch(set_web3_instance(null));
@@ -75,7 +78,7 @@ const events = {
     },
 
     chainChanged: chainId => {
-        celesteStore.dispatch(set_chain_id(+chainId.toString(16)));
+        celesteStore.dispatch(set_chain_id(chainId));
     },
 
     connect: args => {

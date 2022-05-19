@@ -2,7 +2,6 @@
 const providers = {
     INJECTED: 'INJECTED',
     CONNECTED: 'CONNECTED',
-    READONLY: 'READONLY',
 };
 
 const events = {

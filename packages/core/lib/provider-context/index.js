@@ -7,8 +7,8 @@ class ProviderContext {
         this.#strategy = strategy;
     }
 
-    getProvider(rpc) {
-        return this.#strategy.getProvider(rpc);
+    getProvider(rpcs) {
+        return this.#strategy.getProvider(rpcs);
     }
 
     async requestConnection(provider) {

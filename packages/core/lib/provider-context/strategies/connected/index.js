@@ -3,13 +3,20 @@ import { store as celesteStore, actions } from '@celeste-js/store';
 import Web3 from 'web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
+import { removeWriteSmartContracts } from '../../../smart-contract-utils/initialize';
+
 import IActionsStrategy from '../IActionsStrategy';
 
-const getProvider = rpc => {
+const getProvider = rpcs => {
+    const rpcObject = {};
+
+    rpcs.forEach(rpc => {
+        const { chainId, url } = rpc;
+        rpcObject[+chainId] = url;
+    });
+
     const provider = new WalletConnectProvider({
-        rpc: {
-            [+rpc.chainId]: rpc.url,
-        },
+        rpc: rpcObject,
     });
 
     return provider;
@@ -66,6 +73,8 @@ const events = {
     },
     disconnect: args => {
         const { code } = args;
+
+        removeWriteSmartContracts();
 
         if (code === 1000) {
             celesteStore.dispatch(set_login_status(false));

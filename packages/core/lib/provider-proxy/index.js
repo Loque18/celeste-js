@@ -12,8 +12,8 @@ class ProviderProxy {
 
     #providers = {};
 
-    constructor(rpc) {
-        this.#currentType = providers.READONLY;
+    constructor(rpcs) {
+        this.#currentType = providers.INJECTED;
 
         this.#context = new ProviderContext();
 
@@ -24,7 +24,7 @@ class ProviderProxy {
 
             try {
                 // instantiate providers
-                this.#providers[providerType] = this.#getProvider(rpc);
+                this.#providers[providerType] = this.#getProvider(rpcs);
             } catch (e) {
                 // handle error
                 // eslint-disable-next-line no-console
@@ -34,8 +34,8 @@ class ProviderProxy {
             }
         });
 
-        // set readonly provider as default
-        this.#context.setStrategy(providers.READONLY);
+        // set injected provider as default
+        this.#context.setStrategy(providers.INJECTED);
 
         // register events
         this.registerEvents();
@@ -63,11 +63,13 @@ class ProviderProxy {
             ethereum.on('chainChanged', chainId => {
                 if (this.#currentType !== providers.INJECTED) return;
 
+                const decimalChainId = parseInt(chainId, 10);
+
                 // call celeste event callback
-                this.#context.onChainChanged(chainId);
+                this.#context.onChainChanged(decimalChainId);
 
                 if (customEvents && customEvents.chainChanged) {
-                    customEvents.chainChanged(chainId, ethereum);
+                    customEvents.chainChanged(decimalChainId, ethereum);
                 }
             });
 
@@ -112,7 +114,6 @@ class ProviderProxy {
     }
 
     // api
-
     setType(type) {
         validateProviderType(type);
         this.#currentType = type;
@@ -120,9 +121,8 @@ class ProviderProxy {
     }
 
     // proxy
-
-    #getProvider(rpc) {
-        const provider = this.#context.getProvider(rpc);
+    #getProvider(rpcs) {
+        const provider = this.#context.getProvider(rpcs);
         return provider;
     }
 
