@@ -13,6 +13,6 @@ major improvements for store and changed some variables names for reducers
 
 -   fixed bug, book reducer couldn't be imported
 
-## 2.1.3
+## 2.2.0
 
--   allowed to add multiple read web3 instances
+-   added support to add multiple web3 read instances

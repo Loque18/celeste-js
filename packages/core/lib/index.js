@@ -236,23 +236,25 @@ class CelesteJS {
 
     /* *~~*~~*~~*~~*~~* INTERNAL EVENTS *~~*~~*~~*~~*~~* */
     internalEvents() {
-        const onChainChanged = chainId => {
+        const chainChanged = chainId => {
             if (!validateIfLoggedIn()) return;
-            console.log('removing scs');
             removeWriteSmartContracts();
 
-            const { rcps } = this.#config;
+            const { rpcs } = this.#config;
 
-            const chainIds = Object.values(rcps).map(rpc => rpc.chainId);
+            const chainIds = Object.values(rpcs).map(rpc => +rpc.chainId);
 
-            if (!chainIds.includes(chainId)) return;
+            if (!chainIds.includes(+chainId)) return;
 
-            const web3 = new Web3(rcps[chainId].url);
+            // prettier-ignore
+            const { url } = Object.values(rpcs).find(rpc => rpc.chainId === chainId);
+
+            const web3 = new Web3(url);
             initSmartContracts(this.#config, web3);
         };
 
         this.#internalEvents = {
-            onChainChanged,
+            chainChanged,
         };
 
         this.#providerProxy.registerEvents(this.#internalEvents);

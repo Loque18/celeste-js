@@ -1,6 +1,6 @@
 {
     "name": "@celeste-js/store",
-    "version": "2.1.2",
+    "version": "2.2.0",
     "description": "redux store for celeste",
     "keywords": [
         "web3",

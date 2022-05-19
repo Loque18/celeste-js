@@ -63,7 +63,7 @@ class ProviderProxy {
             ethereum.on('chainChanged', chainId => {
                 if (this.#currentType !== providers.INJECTED) return;
 
-                const decimalChainId = parseInt(chainId, 10);
+                const decimalChainId = parseInt(+chainId, 10);
 
                 // call celeste event callback
                 this.#context.onChainChanged(decimalChainId);
