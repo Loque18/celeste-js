@@ -23,8 +23,8 @@ class ProviderContext {
         await this.#strategy.requestChangeNetwork(provider, chainId);
     }
 
-    async getConnection(provider) {
-        const res = await this.#strategy.getConnection(provider);
+    async getPreviousSession(provider) {
+        const res = await this.#strategy.getPreviousSession(provider);
         return res;
     }
 

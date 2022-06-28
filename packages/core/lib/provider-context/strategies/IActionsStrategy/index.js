@@ -12,21 +12,21 @@ const IActionsStrategy = {
     getProvider: rpcs => {
         throw new Error('Not implemented');
     },
-    getConnection: async provider => {
+    getPreviousSession: async provider => {
         throw new Error('Not implemented');
     },
     events: {
         accountsChanged: accounts => {
-            console.warn('event accountsChanged not implemented');
+            throw new Error('Not implemented');
         },
         chainChanged: chainId => {
-            console.warn('event accountsChanged not implemented');
+            throw new Error('Not implemented');
         },
         disconnect: args => {
-            console.warn('event accountsChanged not implemented');
+            throw new Error('Not implemented');
         },
         connect: args => {
-            console.warn('event accountsChanged not implemented');
+            throw new Error('Not implemented');
         },
     },
 };

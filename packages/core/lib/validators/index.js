@@ -12,10 +12,13 @@ const validateProviderType = providerType => {
 };
 
 const validateConfig = config => {
-    const { rpcs, smartContracts } = config;
+    const { rpcs, smartContracts, isMultichain } = config;
+
+    if (isMultichain === null || isMultichain === undefined)
+        throw new Error('celeste JS: isMultichain must be specified');
 
     // prettier-ignore
-    if(!rpcs) throw new Error('celeste JS: rpc must be specified in celeste.config.js');
+    if(!rpcs) throw new Error('celeste JS: rpcs must be specified in celeste.config.js');
 
     if (Object.keys(rpcs).length === 0)
         throw new Error(

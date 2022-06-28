@@ -48,7 +48,7 @@ const requestChangeNetwork = async (provider, chainId) => {
     });
 };
 
-const getConnection = async provider => {
+const getPreviousSession = async provider => {
     if (provider === null) return null;
     const web3 = new Web3(provider);
 
@@ -56,10 +56,7 @@ const getConnection = async provider => {
 
     if (accounts.length === 0) return null;
 
-    return {
-        accounts,
-        web3,
-    };
+    return provider;
 };
 
 const events = {
@@ -81,13 +78,9 @@ const events = {
         celesteStore.dispatch(set_chain_id(chainId));
     },
 
-    connect: args => {
-        console.log('connect', args);
-    },
+    connect: args => {},
 
-    disconnect: args => {
-        console.log('disconnect', args);
-    },
+    disconnect: args => {},
 };
 
 function InjectedProviderStrategy() {
@@ -95,7 +88,7 @@ function InjectedProviderStrategy() {
         ...IActionsStrategy,
         requestConnection,
         getProvider,
-        getConnection,
+        getPreviousSession,
         requestDisconnection,
         requestChangeNetwork,
         events: {

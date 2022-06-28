@@ -24,7 +24,7 @@ class ProviderProxy {
 
             try {
                 // instantiate providers
-                this.#providers[providerType] = this.#getProvider(rpcs);
+                this.#providers[providerType] = this.#context.getProvider(rpcs);
             } catch (e) {
                 // handle error
                 // eslint-disable-next-line no-console
@@ -38,92 +38,86 @@ class ProviderProxy {
         this.#context.setStrategy(providers.INJECTED);
 
         // register events
-        this.registerEvents();
+        // this.registerEvents();
     }
 
     // events
-    registerEvents(customEvents = null) {
-        const ethereum = this.#providers[providers.INJECTED];
-        const walletconnect = this.#providers[providers.CONNECTED];
+    // registerEvents(customEvents = null) {
+    //     const ethereum = this.#providers[providers.INJECTED];
+    //     const walletconnect = this.#providers[providers.CONNECTED];
 
-        if (ethereum) {
-            // clear previous listeners
-            ethereum.removeAllListeners();
+    //     if (ethereum) {
+    //         // clear previous listeners
+    //         ethereum.removeAllListeners();
 
-            ethereum.on('accountsChanged', accounts => {
-                if (this.#currentType !== providers.INJECTED) return;
+    //         ethereum.on('accountsChanged', accounts => {
+    //             if (this.#currentType !== providers.INJECTED) return;
 
-                // call celeste event callback
-                this.#context.onAccountsChanged(accounts);
+    //             // call celeste event callback
+    //             this.#context.onAccountsChanged(accounts);
 
-                if (customEvents && customEvents.accountsChanged)
-                    customEvents.accountsChanged(accounts, ethereum);
-            });
+    //             if (customEvents && customEvents.accountsChanged)
+    //                 customEvents.accountsChanged(accounts, ethereum);
+    //         });
 
-            ethereum.on('chainChanged', chainId => {
-                if (this.#currentType !== providers.INJECTED) return;
+    //         ethereum.on('chainChanged', chainId => {
+    //             if (this.#currentType !== providers.INJECTED) return;
 
-                const decimalChainId = parseInt(+chainId, 10);
+    //             const decimalChainId = parseInt(+chainId, 10);
 
-                // call celeste event callback
-                this.#context.onChainChanged(decimalChainId);
+    //             // call celeste event callback
+    //             this.#context.onChainChanged(decimalChainId);
 
-                if (customEvents && customEvents.chainChanged) {
-                    customEvents.chainChanged(decimalChainId, ethereum);
-                }
-            });
+    //             if (customEvents && customEvents.chainChanged) {
+    //                 customEvents.chainChanged(decimalChainId, ethereum);
+    //             }
+    //         });
 
-            ethereum.on('connect', args => {
-                if (this.#currentType !== providers.INJECTED) return;
-                this.#context.onConnect(args);
-            });
+    //         ethereum.on('connect', args => {
+    //             if (this.#currentType !== providers.INJECTED) return;
+    //             this.#context.onConnect(args);
+    //         });
 
-            ethereum.on('disconnect', error => {
-                if (this.#currentType !== providers.INJECTED) return;
-                this.#context.onDisconnect(error);
-            });
-        }
+    //         ethereum.on('disconnect', error => {
+    //             if (this.#currentType !== providers.INJECTED) return;
+    //             this.#context.onDisconnect(error);
+    //         });
+    //     }
 
-        if (walletconnect) {
-            walletconnect.removeAllListeners();
+    //     if (walletconnect) {
+    //         walletconnect.removeAllListeners();
 
-            walletconnect.on('accountsChanged', accounts => {
-                if (this.#currentType !== providers.CONNECTED) return;
-                this.#context.onAccountsChanged(accounts);
+    //         walletconnect.on('accountsChanged', accounts => {
+    //             if (this.#currentType !== providers.CONNECTED) return;
+    //             this.#context.onAccountsChanged(accounts);
 
-                if (customEvents && customEvents.accountsChanged)
-                    customEvents.accountsChanged(accounts, walletconnect);
-            });
+    //             if (customEvents && customEvents.accountsChanged)
+    //                 customEvents.accountsChanged(accounts, walletconnect);
+    //         });
 
-            walletconnect.on('chainChanged', chainId => {
-                if (this.#currentType !== providers.CONNECTED) return;
-                this.#context.onChainChanged(chainId);
+    //         walletconnect.on('chainChanged', chainId => {
+    //             if (this.#currentType !== providers.CONNECTED) return;
+    //             this.#context.onChainChanged(chainId);
 
-                if (customEvents && customEvents.chainChanged)
-                    customEvents.chainChanged(chainId, walletconnect);
-            });
+    //             if (customEvents && customEvents.chainChanged)
+    //                 customEvents.chainChanged(chainId, walletconnect);
+    //         });
 
-            walletconnect.on('disconnect', (code, reason) => {
-                if (this.#currentType !== providers.CONNECTED) return;
-                this.#context.onDisconnect({ code, reason });
+    //         walletconnect.on('disconnect', (code, reason) => {
+    //             if (this.#currentType !== providers.CONNECTED) return;
+    //             this.#context.onDisconnect({ code, reason });
 
-                if (customEvents && customEvents.disconnect)
-                    customEvents.disconnect({ code, reason }, walletconnect);
-            });
-        }
-    }
+    //             if (customEvents && customEvents.disconnect)
+    //                 customEvents.disconnect({ code, reason }, walletconnect);
+    //         });
+    //     }
+    // }
 
     // api
     setType(type) {
         validateProviderType(type);
         this.#currentType = type;
         this.#context.setStrategy(new StrategiesMap[type]());
-    }
-
-    // proxy
-    #getProvider(rpcs) {
-        const provider = this.#context.getProvider(rpcs);
-        return provider;
     }
 
     getProvider(type) {
@@ -150,8 +144,8 @@ class ProviderProxy {
         );
     }
 
-    async getConnection() {
-        const connection = await this.#context.getConnection(
+    async getPreviousSession() {
+        const connection = await this.#context.getPreviousSession(
             this.#providers[this.#currentType]
         );
         return connection;

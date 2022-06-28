@@ -23,7 +23,7 @@
         "test": "echo no tests for core",
         "clean": "rmdir /s /q dist",
         "build": "npm run clean && cross-env NODE_ENV=production babel ./lib --out-dir dist --copy-files",
-        "copy": "Xcopy D:\\orcania\\celeste-js\\packages\\core\\dist D:\\orcania\\mt\\src\\components\\celeste\\dist /E/H/C/I/Y"
+        "copy": "xcopy C:\\Users\\DELL\\Documents\\orcania\\celeste-js\\packages\\core\\dist C:\\Users\\DELL\\Documents\\orcania\\celeste-mt\\src\\components\\celeste\\dist /E/H/C/I/Y"
     },
     "bugs": {
         "url": "https://github.com/Loque18/celeste-js/issues"
@@ -32,7 +32,7 @@
     "dependencies": {
         "@babel/runtime": "^7.17.9",
         "@celeste-js/store": "^2.2.0",
-        "@walletconnect/web3-provider": "^1.7.7",
+        "@walletconnect/web3-provider": "^1.7.8",
         "web3": "^1.7.3"
     },
     "devDependencies": {

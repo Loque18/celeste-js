@@ -34,20 +34,11 @@ const requestChangeNetwork = async (provider, chainId) => {
     throw new Error(`Please change to network ${chainId}`);
 };
 
-const getConnection = async provider => {
+const getPreviousSession = async provider => {
     if (!provider.connector.connected) return null;
     await provider.enable();
 
-    const web3 = new Web3(provider);
-
-    const accounts = await web3.eth.getAccounts();
-
-    if (accounts.length === 0) return null;
-
-    return {
-        accounts,
-        web3,
-    };
+    return provider;
 };
 
 const {
@@ -97,7 +88,7 @@ function ConnectedActionsStrategy() {
         requestConnection,
         requestDisconnection,
         requestChangeNetwork,
-        getConnection,
+        getPreviousSession,
         events: {
             ...IActionsStrategy.events,
             ...events,
