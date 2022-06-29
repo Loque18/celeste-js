@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable lines-between-class-members */
 
 import { store as celesteStore, actions } from '@celeste-js/store';
@@ -200,21 +201,22 @@ class CelesteJS {
             ethProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
 
-                this.#events?.accountsChanged(accounts);
+                this.#events.accountsChanged &&
+                    this.#events.accountsChanged(accounts);
             });
 
             ethProvider.on('chainChanged', chainId => {
                 this.chainChanged(parseInt(+chainId, 10));
 
-                this.#events?.chainChanged(chainId);
+                this.#events.chainChanged && this.#events.chainChanged(chainId);
             });
 
             ethProvider.on('connect', args => {
-                this.#events?.connect(args);
+                this.#events.connect && this.#events.connect(args);
             });
 
             ethProvider.on('disconnect', error => {
-                this.#events?.disconnect(error);
+                this.#events.disconnect && this.#events.disconnect(error);
             });
         }
 
@@ -222,13 +224,14 @@ class CelesteJS {
             wcProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
 
-                this.#events?.accountsChanged(accounts);
+                this.#events.accountsChanged &&
+                    this.#events.accountsChanged(accounts);
             });
 
             wcProvider.on('chainChanged', chainId => {
                 this.chainChanged(chainId);
 
-                this.#events?.chainChanged(chainId);
+                this.#events.chainChanged && this.#events.chainChanged(chainId);
             });
 
             wcProvider.on('disconnect', (code, reason) => {
@@ -239,7 +242,8 @@ class CelesteJS {
                     console.error('Wallet disconnected', code, reason);
                 }
 
-                this.#events?.disconnect(code, reason);
+                this.#events.disconnect &&
+                    this.#events.disconnect(code, reason);
             });
         }
     }

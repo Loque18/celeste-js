@@ -9,3 +9,7 @@
 ### v1.0.3 & v1.0.4
 
 -   added a callback on successful connection (Connect button component)
+
+### v1.0.5
+
+-   added multichain support
