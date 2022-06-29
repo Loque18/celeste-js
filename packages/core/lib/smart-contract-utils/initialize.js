@@ -11,29 +11,29 @@ const {
     set_initialized,
 } = actions;
 
-export const initSmartContracts = async (config, web3) => {
-    const { smartContracts, addressBook, rpcs } = config;
+// export const initSmartContracts = async (config, web3) => {
+//     const { smartContracts, addressBook, rpcs } = config;
 
-    const currentChainId = await web3.eth.getChainId();
+//     const currentChainId = await web3.eth.getChainId();
 
-    const chainIds = Object.values(rpcs).map(rpc => rpc.chainId);
+//     const chainIds = Object.values(rpcs).map(rpc => rpc.chainId);
 
-    if (smartContracts && chainIds.includes(currentChainId)) {
-        smartContracts.forEach(async sc => {
-            if (!addressBook[sc.key]) return;
+//     if (smartContracts && chainIds.includes(currentChainId)) {
+//         smartContracts.forEach(async sc => {
+//             if (!addressBook[sc.key]) return;
 
-            // prettier-ignore
-            const deployOnCurrentChain = config.addressBook[sc.key][currentChainId];
+//             // prettier-ignore
+//             const deployOnCurrentChain = config.addressBook[sc.key][currentChainId];
 
-            if (!deployOnCurrentChain) return;
+//             if (!deployOnCurrentChain) return;
 
-            const SCFactory = new SmartContractFactory(web3);
+//             const SCFactory = new SmartContractFactory(web3);
 
-            const contract = SCFactory.create(sc.abi, deployOnCurrentChain);
-            celesteStore.dispatch(add_contract(`${sc.key}`, contract));
-        });
-    }
-};
+//             const contract = SCFactory.create(sc.abi, deployOnCurrentChain);
+//             celesteStore.dispatch(add_contract(`${sc.key}`, contract));
+//         });
+//     }
+// };
 
 export const removeWriteSmartContracts = () => {
     const { contracts } = celesteStore.getState().web3Reducer;
@@ -53,21 +53,18 @@ export const initSC = (address, smartContract, web3, key) => {
     celesteStore.dispatch(add_contract(`${scKey}${key}`, contract));
 };
 
-export const initWriteWeb3 = async (providerType, provider) => {
-    const web3 = new Web3(provider);
-    const chainId = await web3.eth.getChainId();
+export const initSmartContracts = async (config, web3, chainId) => {
+    const { smartContracts, addressBook, isMultichain } = config;
 
-    celesteStore.dispatch(set_web3_instance(web3));
-    celesteStore.dispatch(set_provider_wallet(providerType));
-    celesteStore.dispatch(set_login_status(true));
-    celesteStore.dispatch(set_chain_id(chainId));
-    celesteStore.dispatch(set_initialized(true));
-};
+    smartContracts.forEach(async sc => {
+        const address = isMultichain
+            ? addressBook?.[sc.key]?.[chainId]
+            : addressBook[sc.key];
 
-export const removeWeb3 = () => {
-    celesteStore.dispatch(set_web3_instance(null));
-    celesteStore.dispatch(set_provider_wallet(null));
-    celesteStore.dispatch(set_login_status(false));
-    celesteStore.dispatch(set_chain_id(null));
-    celesteStore.dispatch(set_initialized(false));
+        if (address === undefined) return;
+
+        if (!address) return;
+
+        initSC(address, sc, web3, '');
+    });
 };

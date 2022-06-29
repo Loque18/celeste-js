@@ -9,6 +9,12 @@ import {
     validateIfLoggedIn,
 } from './validators';
 
+import {
+    initSC,
+    initSmartContracts,
+    removeWriteSmartContracts,
+} from './smart-contract-utils/initialize';
+
 import ProviderProxy from './provider-proxy';
 import { providers } from './constants';
 
@@ -23,7 +29,7 @@ const {
     set_provider_wallet,
 } = actions;
 
-const storeWalletData = async (providerType, provider) => {
+const storeWalletData = async (providerType, provider, config) => {
     const web3 = new Web3(provider);
     const currentChainId = await web3.eth.getChainId();
     const currentAddress = await web3.eth.getAccounts();
@@ -38,6 +44,8 @@ const storeWalletData = async (providerType, provider) => {
     celesteStore.dispatch(set_login_status(true)); // change LoggedIn status
 
     celesteStore.dispatch(set_initialized(true)); // change initialized status
+
+    initSmartContracts(config, web3, currentChainId);
 };
 
 const removeWalletData = () => {
@@ -51,6 +59,8 @@ const removeWalletData = () => {
     celesteStore.dispatch(set_login_status(false)); // change LoggedIn status
 
     celesteStore.dispatch(set_initialized(false)); // change initialized status
+
+    removeWriteSmartContracts();
 };
 
 class CelesteJS {
@@ -63,13 +73,49 @@ class CelesteJS {
         this.config = config;
         Object.freeze(this.config);
 
-        // 1. init readonly smart contracts
+        const { rpcs, smartContracts, isMultichain, addressBook } = config;
+
+        // only read
+        // 2. create static web3 for each rpc instance and init read smart contracts
+        Object.values(rpcs).forEach(rpc => {
+            const web3 = new Web3(rpc.url);
+
+            // prettier-ignore
+            celesteStore.dispatch(add_web3_readonly_instance(rpc.chainId, web3));
+
+            // 3. create proxies for each smart contract provided across all rpc instances
+            smartContracts.forEach(sc => {
+                // 3.1. get address for this chain
+                const address = isMultichain
+                    ? addressBook?.[sc.key]?.[rpc.chainId]
+                    : addressBook[sc.key];
+
+                if (address === undefined) return;
+
+                // 3.2. check if chain is listed in rpc config
+                // prettier-ignore
+                if (!Object.values(rpcs).map(_rpc => _rpc.chainId).includes(rpc.chainId)) {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `CelesteJS: config error - chain with id ${rpc.chainId}, provided on element addressBook.${sc.key}, is not listen in rpcs.`
+                    );
+                    return;
+                }
+
+                // 3.3. get sc factory instance for this chain using chainId
+                initSC(address, sc, web3, `_READ.${rpc.chainId}`);
+            });
+        });
+
+        celesteStore.dispatch(set_readonly_initialized(true));
 
         // 2. instantiate provider proxy
         this.#providerProxy = new ProviderProxy(Object.values(config.rpcs));
 
+        // 3. listen for provider events
         this.listenForProviderEvents();
 
+        // 4. try getting previous session
         this.getPreviosSession();
     }
 
@@ -94,7 +140,7 @@ class CelesteJS {
         const s = sessions.find(session => session.provider !== null);
 
         if (s) {
-            await storeWalletData(s.providerType, s.provider);
+            await storeWalletData(s.providerType, s.provider, this.config);
         }
     }
 
@@ -109,7 +155,8 @@ class CelesteJS {
 
         await storeWalletData(
             providerType,
-            this.#providerProxy.getProvider(providerType)
+            this.#providerProxy.getProvider(providerType),
+            this.config
         );
     }
 
@@ -135,11 +182,13 @@ class CelesteJS {
                 this.accountsChanged(accounts);
             });
 
-            ethProvider.on('chainChanged', chainId => {});
+            ethProvider.on('chainChanged', chainId => {
+                this.chainChanged(parseInt(+chainId, 10));
+            });
 
-            ethProvider.on('connect', args => {});
+            // ethProvider.on('connect', args => {});
 
-            ethProvider.on('disconnect', error => {});
+            // ethProvider.on('disconnect', error => {});
         }
 
         if (wcProvider) {
@@ -147,7 +196,9 @@ class CelesteJS {
                 this.accountsChanged(accounts);
             });
 
-            wcProvider.on('chainChanged', chainId => {});
+            wcProvider.on('chainChanged', chainId => {
+                this.chainChanged(chainId);
+            });
 
             wcProvider.on('disconnect', (code, reason) => {
                 if (code === 1000) {
@@ -165,7 +216,29 @@ class CelesteJS {
         if (!accounts.length > 0) {
             // celesteStore.dispatch(set_address(accounts[0]));
             removeWalletData();
+        } else {
+            celesteStore.dispatch(set_address(accounts[0]));
         }
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    chainChanged(chainId) {
+        celesteStore.dispatch(set_chain_id(chainId));
+
+        if (!validateIfLoggedIn()) return;
+        removeWriteSmartContracts();
+
+        const { rpcs } = this.config;
+
+        const chainIds = Object.values(rpcs).map(rpc => +rpc.chainId);
+
+        if (!chainIds.includes(+chainId)) return;
+
+        // prettier-ignore
+        const providerType = celesteStore.getState().walletReducer.providerWallet;
+        const provider = this.#providerProxy.getProvider(providerType);
+
+        storeWalletData(providerType, provider, this.config);
     }
 }
 
