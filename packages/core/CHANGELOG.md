@@ -26,6 +26,10 @@
 
 -   added support for provider events
 
-### 1.2.0
+### 1.2.0 & 1.2.1 alpha
+
+-   added multichain support
+
+### 1.3.0
 
 -   optimized code for multichain support, new configuration structure
