@@ -15,20 +15,6 @@ const IActionsStrategy = {
     getPreviousSession: async provider => {
         throw new Error('Not implemented');
     },
-    events: {
-        accountsChanged: accounts => {
-            throw new Error('Not implemented');
-        },
-        chainChanged: chainId => {
-            throw new Error('Not implemented');
-        },
-        disconnect: args => {
-            throw new Error('Not implemented');
-        },
-        connect: args => {
-            throw new Error('Not implemented');
-        },
-    },
 };
 
 export default IActionsStrategy;

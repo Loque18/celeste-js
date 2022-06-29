@@ -16,3 +16,7 @@ major improvements for store and changed some variables names for reducers
 ## 2.2.0
 
 -   added support to add multiple web3 read instances
+
+## 2.3.0
+
+-   removed usued addressbook reducer, added action to remove smart contracts

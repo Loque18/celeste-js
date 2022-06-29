@@ -4,6 +4,7 @@ import {
     SET_INITIALIZED,
     SET_READONLY_INITIALIZED,
     ADD_CONTRACT,
+    REMOVE_CONTRACT,
 } from '../constants';
 
 const defaultState = {
@@ -11,7 +12,7 @@ const defaultState = {
     web3readonly: null,
     initialized: false,
     readonly_initialized: false,
-    contracts: [],
+    contracts: {},
 };
 
 // eslint-disable-next-line default-param-last
@@ -51,6 +52,17 @@ const reducer = (state = defaultState, { type, payload }) => {
                     ...state.contracts,
                     [payload.key]: payload.contract,
                 },
+            };
+        }
+
+        case REMOVE_CONTRACT: {
+            // payload is the key of the contract
+            const newContracts = { ...state.contracts };
+            delete newContracts[payload];
+
+            return {
+                ...state,
+                contracts: newContracts,
             };
         }
 

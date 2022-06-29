@@ -7,6 +7,7 @@ const {
     set_initialized,
     set_readonly_initialized,
     add_contract,
+    remove_contract,
 } = actions;
 
 const defaultState = {
@@ -14,7 +15,7 @@ const defaultState = {
     web3readonly: null,
     initialized: false,
     readonly_initialized: false,
-    contracts: [],
+    contracts: {},
 };
 
 describe('web3 reducer', () => {
@@ -92,7 +93,7 @@ describe('web3 reducer', () => {
         });
     });
 
-    it('should add a contract to the reducer', () => {
+    it('should add a contract to the reducer and then rmeove it', () => {
         const contract = {
             abi: '<abi>',
             address: '<address>',
@@ -108,6 +109,14 @@ describe('web3 reducer', () => {
             contracts: {
                 [key]: contract,
             },
+        });
+
+        const action2 = remove_contract(key);
+        const nextState2 = web3Reducer(nextState, action2);
+
+        expect(nextState2).toEqual({
+            ...nextState,
+            contracts: {},
         });
     });
 });

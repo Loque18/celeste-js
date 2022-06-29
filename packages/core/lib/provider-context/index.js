@@ -27,24 +27,6 @@ class ProviderContext {
         const res = await this.#strategy.getPreviousSession(provider);
         return res;
     }
-
-    /* *~~*~~*~~*~~*~~* EVENTS ~~*~~*~~*~~*~~* */
-
-    onAccountsChanged(accounts) {
-        this.#strategy.events.accountsChanged(accounts);
-    }
-
-    onChainChanged(chainId) {
-        this.#strategy.events.chainChanged(chainId);
-    }
-
-    onDisconnect(args) {
-        this.#strategy.events.disconnect(args);
-    }
-
-    onConnect(args) {
-        this.#strategy.events.connect(args);
-    }
 }
 
 export default ProviderContext;

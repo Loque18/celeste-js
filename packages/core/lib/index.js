@@ -7,6 +7,7 @@ import {
     validateConfig,
     validateProviderType,
     validateIfLoggedIn,
+    validateChainId,
 } from './validators';
 
 import {
@@ -73,7 +74,7 @@ class CelesteJS {
         this.config = config;
         Object.freeze(this.config);
 
-        const { rpcs, smartContracts, isMultichain, addressBook } = config;
+        const { rpcs, smartContracts, isMultichain } = config;
 
         // only read
         // 2. create static web3 for each rpc instance and init read smart contracts
@@ -87,8 +88,8 @@ class CelesteJS {
             smartContracts.forEach(sc => {
                 // 3.1. get address for this chain
                 const address = isMultichain
-                    ? addressBook?.[sc.key]?.[rpc.chainId]
-                    : addressBook[sc.key];
+                    ? sc.address[rpc.chainId]
+                    : sc.address;
 
                 if (address === undefined) return;
 
@@ -170,6 +171,17 @@ class CelesteJS {
         await this.#providerProxy.requestDisconnection();
 
         removeWalletData();
+    }
+
+    async requestChangeNetwork(chainId) {
+        validateChainId();
+        if (!validateIfLoggedIn()) return; // if user is not logged in, do nothing
+
+        const providerType =
+            celesteStore.getState().walletReducer.providerWallet;
+
+        this.#providerProxy.setType(providerType);
+        this.#providerProxy.requestChangeNetwork(chainId);
     }
 
     /* *~~*~~*~~*~~*~~* HANDLE EVENTS *~~*~~*~~*~~*~~* */
