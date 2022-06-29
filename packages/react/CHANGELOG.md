@@ -10,6 +10,10 @@
 
 -   added a callback on successful connection (Connect button component)
 
-### v1.0.5
+### v1.0.5 alpha
+
+-   added multichain support alpha testing
+
+### v1.1.0
 
 -   added multichain support
