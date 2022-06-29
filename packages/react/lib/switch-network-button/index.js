@@ -15,7 +15,7 @@ const SwithNetworkButton = ({
 
     const onClick = async () => {
         try {
-            await celeste.requestChangeNetwork(chainId);
+            await celeste.requestChangeNetwork(+chainId);
         } catch (e) {
             onErrorCB(e);
         }

@@ -17,7 +17,7 @@ import {
 } from './smart-contract-utils/initialize';
 
 import ProviderProxy from './provider-proxy';
-import { providers } from './constants';
+import { providers, events } from './constants';
 
 const {
     set_address,
@@ -67,6 +67,7 @@ const removeWalletData = () => {
 class CelesteJS {
     config = {};
     #providerProxy;
+    #events = {};
 
     constructor(config) {
         // 1. store config
@@ -91,7 +92,9 @@ class CelesteJS {
                     ? sc.address[rpc.chainId]
                     : sc.address;
 
-                if (address === undefined) return;
+                if (address === undefined) {
+                    return;
+                }
 
                 // 3.2. check if chain is listed in rpc config
                 // prettier-ignore
@@ -174,7 +177,7 @@ class CelesteJS {
     }
 
     async requestChangeNetwork(chainId) {
-        validateChainId();
+        validateChainId(chainId);
         if (!validateIfLoggedIn()) return; // if user is not logged in, do nothing
 
         const providerType =
@@ -189,27 +192,43 @@ class CelesteJS {
         const ethProvider = this.#providerProxy.getProvider(providers.INJECTED);
         const wcProvider = this.#providerProxy.getProvider(providers.CONNECTED);
 
+        // remove events
+        ethProvider.removeAllListeners();
+        wcProvider.removeAllListeners();
+
         if (ethProvider) {
             ethProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
+
+                this.#events?.accountsChanged(accounts);
             });
 
             ethProvider.on('chainChanged', chainId => {
                 this.chainChanged(parseInt(+chainId, 10));
+
+                this.#events?.chainChanged(chainId);
             });
 
-            // ethProvider.on('connect', args => {});
+            ethProvider.on('connect', args => {
+                this.#events?.connect(args);
+            });
 
-            // ethProvider.on('disconnect', error => {});
+            ethProvider.on('disconnect', error => {
+                this.#events?.disconnect(error);
+            });
         }
 
         if (wcProvider) {
             wcProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
+
+                this.#events?.accountsChanged(accounts);
             });
 
             wcProvider.on('chainChanged', chainId => {
                 this.chainChanged(chainId);
+
+                this.#events?.chainChanged(chainId);
             });
 
             wcProvider.on('disconnect', (code, reason) => {
@@ -219,6 +238,8 @@ class CelesteJS {
                     // eslint-disable-next-line no-console
                     console.error('Wallet disconnected', code, reason);
                 }
+
+                this.#events?.disconnect(code, reason);
             });
         }
     }
@@ -251,6 +272,13 @@ class CelesteJS {
         const provider = this.#providerProxy.getProvider(providerType);
 
         storeWalletData(providerType, provider, this.config);
+    }
+
+    on(eventKey, callback) {
+        if (!Object.values(events).includes(eventKey))
+            throw new Error(`Event ${eventKey} does not exist`);
+
+        this.#events[eventKey] = callback;
     }
 }
 
