@@ -193,11 +193,8 @@ class CelesteJS {
         const ethProvider = this.#providerProxy.getProvider(providers.INJECTED);
         const wcProvider = this.#providerProxy.getProvider(providers.CONNECTED);
 
-        // remove events
-        ethProvider.removeAllListeners();
-        wcProvider.removeAllListeners();
-
         if (ethProvider) {
+            ethProvider.removeAllListeners();
             ethProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
 
@@ -221,6 +218,8 @@ class CelesteJS {
         }
 
         if (wcProvider) {
+            wcProvider.removeAllListeners();
+
             wcProvider.on('accountsChanged', accounts => {
                 this.accountsChanged(accounts);
 

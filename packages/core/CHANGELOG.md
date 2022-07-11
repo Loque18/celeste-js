@@ -37,3 +37,7 @@
 ### 1.3.1
 
 -   removed dev console logs
+
+### 1.3.2
+
+-   fixed bug, celesteJS throwed an error when didn't detect a provider in the browser
