@@ -46,7 +46,6 @@ const validateIfLoggedIn = () => {
 };
 
 const validateChainId = chainId => {
-    console.log('celeste JS: chainId', chainId);
     if (typeof chainId !== 'number' || chainId < 0)
         throw new Error('celeste JS: chainId must be a number greater than 0');
 };

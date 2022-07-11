@@ -17,3 +17,7 @@
 ### v1.1.0
 
 -   added multichain support
+
+### v1.2.0
+
+-   added a network wrapper that allows to specify the target chain

@@ -33,3 +33,7 @@
 ### 1.3.0
 
 -   optimized code for multichain support, new configuration structure
+
+### 1.3.1
+
+-   removed dev console logs
